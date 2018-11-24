@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.* ?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import clientgui.models.MainModel ?>
+
+<BorderPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
+    <fx:define>
+        <MainModel fx:id="model"/>
+    </fx:define>
+    <stylesheets>
+        <URL value="@css/Main.css" />
+    </stylesheets>
+    <top>
+        <VBox styleClass="loginBox">
+            <HBox styleClass="btnLoginBox">
+                <Button text="LOG IN" />
+                <Button text="LOG OUT" />
+            </HBox>
+            <Label text="${model.messages}" />
+        </VBox>
+    </top>
+    <center>
+        <VBox styleClass="centerBox">
+            <TextArea disable="true" text="${model.messages}" />
+            <HBox styleClass="sendBox">
+                <TextField prefWidth="300" />
+                <Button text="INVIA" />
+            </HBox>
+        </VBox> 
+    </center>
+</BorderPane>
