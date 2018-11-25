@@ -16,17 +16,11 @@ public class MainViewController implements Initializable {
 
     @FXML
     private MainModel model;
-    
-    public MainViewController(){        
-        this.model = new MainModel();
-    }
-    
+        
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        
-    }    
+    public void initialize(URL url, ResourceBundle rb) { }
     
 }

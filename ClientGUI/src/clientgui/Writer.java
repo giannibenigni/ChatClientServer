@@ -39,9 +39,9 @@ public class Writer extends Thread{
     public void run() {
         while(attivo){
             try {
-//                this.outputString.set(new StringBuilder("\n")
-//                                            .append(in.readLine()).toString());
-                System.out.println(in.readLine());
+                this.outputString.set(new StringBuilder(outputString.get())
+                                        .append("\n")
+                                        .append(in.readLine()).toString());               
             } catch (IOException ex) {
                 System.err.println(ex);
             }

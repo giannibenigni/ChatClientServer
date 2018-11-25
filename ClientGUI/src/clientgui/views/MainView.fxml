@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import clientgui.models.MainModel ?>
 
-<BorderPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
+<BorderPane id="AnchorPane" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
     <fx:define>
         <MainModel fx:id="model"/>
     </fx:define>
@@ -18,18 +18,21 @@
     <top>
         <VBox styleClass="loginBox">
             <HBox styleClass="btnLoginBox">
-                <Button text="LOG IN" />
-                <Button text="LOG OUT" />
+                <Button text="LOG IN" onAction="$model.logInHandler" />
+                <Button text="LOG OUT" onAction="$model.logOutHandler" />
             </HBox>
-            <Label text="${model.messages}" />
+            <HBox styleClass="stateBox">
+                <Label text="Connesso:" />
+                <CheckBox selected="${model.userLogged}" disable="true" />
+            </HBox>
         </VBox>
     </top>
     <center>
         <VBox styleClass="centerBox">
-            <TextArea disable="true" text="${model.messages}" />
+            <TextArea disable="true" text="${model.messages}" prefHeight="400"/>
             <HBox styleClass="sendBox">
-                <TextField prefWidth="300" />
-                <Button text="INVIA" />
+                <TextField prefWidth="400" />
+                <Button text="INVIA" onAction="$model.sendMessageHandler" />
             </HBox>
         </VBox> 
     </center>
