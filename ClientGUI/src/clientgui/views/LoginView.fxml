@@ -6,10 +6,28 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import clientgui.models.LoginModel ?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.LoginViewController">
+<VBox id="root" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.LoginViewController" styleClass="root">
     <stylesheets>
         <URL value="@css/Login.css" />
     </stylesheets>
-    
-</AnchorPane>
+    <fx:define>
+        <LoginModel fx:id="model" />
+    </fx:define>
+    <HBox styleClass="ip-portBox">
+        <VBox>
+            <Label text="Indirizzo IP" />
+            <TextField prefWidth="150" fx:id="txtIp" text="$model.serverData.ip" />
+        </VBox>
+        <VBox>
+            <Label text="Porta" />
+            <TextField prefWidth="70" fx:id="txtPort" text="$model.serverData.port"/>
+        </VBox>
+    </HBox>
+    <HBox styleClass="usernameBox">
+        <Label text="UserName" />
+        <TextField prefWidth="200" fx:id="txtUsername" promptText="Inserisci lo username" text="$model.username" />
+    </HBox>
+    <Button text="LOG IN" onAction="$model.logInHandler" />
+</VBox>

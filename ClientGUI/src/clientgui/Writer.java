@@ -41,7 +41,7 @@ public class Writer extends Thread{
             try {
                 this.outputString.set(new StringBuilder(outputString.get())
                                         .append("\n")
-                                        .append(in.readLine()).toString());               
+                                        .append(in.readLine()).toString());                  
             } catch (IOException ex) {
                 System.err.println(ex);
             }
