@@ -67,11 +67,19 @@ public class LoginModel {
         this.mainModel = mainModel;
     }
     
+    /**
+     * LOG IN Handler
+     * faccio la connessione al socket e chiudo la finestra di login
+     */
     private EventHandler<ActionEvent> logInHandler = e -> {
         mainModel.connectToSocket(serverData, username.get());        
         ((Stage)((Node)e.getTarget()).getScene().getWindow()).close();
     };
     
+    /**
+     * LogIn Handler Getter
+     * @return EventHandler
+     */
     public EventHandler<ActionEvent> getLogInHandler(){
         return this.logInHandler;
     }

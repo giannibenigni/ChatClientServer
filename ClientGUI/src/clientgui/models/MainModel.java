@@ -10,8 +10,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -155,7 +153,7 @@ public class MainModel {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientgui/views/LoginView.fxml"));                    
             Stage stage = new Stage();            
             
-            //TODO cercare un modo per fare apparire la finestra di login sopra a tutto però senza compromettere la alerrtBox della connessione al server
+            //TODO cercare un modo per fare apparire la finestra di login sopra a tutto però senza compromettere la alertBox di errore della connessione al server
 //            stage.setAlwaysOnTop(true);
 //            stage.initModality(Modality.APPLICATION_MODAL);            
             
