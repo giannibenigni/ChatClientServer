@@ -1,0 +1,35 @@
+
+.root{
+    -fx-font-family: "Verdana";
+    -fx-background-color: #dedede;
+    -fx-padding: 10px;
+}
+
+.centerBox{
+    
+    -fx-alignment: center;
+    -fx-padding: 15px;
+    -fx-spacing: 10;
+    
+    -fx-border-radius: 5.0;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-border-insets: 5;
+    
+}
+
+.sendBox{
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.listBox{
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 15px;
+    -fx-spacing: 10;
+    
+    -fx-border-radius: 5.0;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-border-insets: 5;
+}
