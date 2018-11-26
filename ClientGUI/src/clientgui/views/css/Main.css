@@ -1,0 +1,48 @@
+
+.root{
+    -fx-font-family: "Verdana";
+    -fx-background-color: #dedede;
+    -fx-padding: 10px;
+}
+
+.loginBox{
+    -fx-background-color: #c4c4c4; 
+    -fx-background-radius: 5.0;
+    -fx-background-insets: 5;
+    
+    -fx-border-radius: 5.0;
+    -fx-border-width: 1px;
+    -fx-border-insets: 5;
+    -fx-border-color: black;
+        
+    -fx-padding: 15px;
+    -fx-alignment: center;
+    -fx-spacing: 10;
+}
+
+.btnLoginBox{
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.centerBox{    
+    -fx-alignment: center;
+    -fx-padding: 15px;
+    -fx-spacing: 10;
+    
+    -fx-border-radius: 5.0;
+    -fx-border-width: 1px;
+    -fx-border-color: black;
+    -fx-border-insets: 5;
+    
+}
+
+.sendBox{
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}
+
+.stateBox{
+    -fx-alignment: center;
+    -fx-spacing: 20;
+}

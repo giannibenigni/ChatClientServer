@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.* ?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import clientgui.models.MainModel ?>
+
+<BorderPane id="root" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
+    <fx:define>
+        <MainModel fx:id="model"/>
+    </fx:define>
+    <stylesheets>
+        <URL value="@css/Main.css" />
+    </stylesheets>
+    <top>
+        <VBox styleClass="loginBox">
+            <HBox styleClass="btnLoginBox">
+                <Button text="LOG IN" onAction="$model.logInHandler" />
+                <Button text="LOG OUT" onAction="$model.logOutHandler" />
+            </HBox>
+            <HBox styleClass="stateBox">
+                <Label text="Connesso:" />
+                <Label text="${model.userLogged}" />
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <VBox styleClass="centerBox">
+            <TextArea editable="false" text="${model.messages}" prefHeight="400"/>
+            <HBox styleClass="sendBox">
+                <TextField prefWidth="400" fx:id="txtMessageToSend" promptText="Messaggio da Inviare ..." text="$model.messageToSend" />
+                <Button text="INVIA" onAction="$model.sendMessageHandler" disable="${!model.userLogged}" />
+            </HBox>
+        </VBox> 
+    </center>
+</BorderPane>

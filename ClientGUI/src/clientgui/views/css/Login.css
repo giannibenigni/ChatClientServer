@@ -1,0 +1,26 @@
+
+.root{
+    -fx-alignment: center;
+    -fx-font-family: "Verdana";
+    -fx-background-color: #dedede;
+    -fx-padding: 10px;
+    -fx-spacing: 20;
+}
+
+.ip-portBox{
+    -fx-alignment: center;
+    -fx-border-color: black;
+    -fx-border-radius: 5.0;
+    -fx-border-width: 1px;
+    -fx-spacing: 60;
+    -fx-padding: 15px;
+}
+
+.usernameBox{
+    -fx-alignment: center;
+    -fx-border-color: black;
+    -fx-border-radius: 5.0;
+    -fx-border-width: 1px;
+    -fx-spacing: 10;
+    -fx-padding: 15px;
+}

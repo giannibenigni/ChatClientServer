@@ -20,7 +20,7 @@ public class JClient {
             
             System.out.print(in.readLine());
             String nomeClient = input.nextLine();
-            out.println(nomeClient);            
+            out.println(nomeClient);
             
             Writer w = new Writer(in);
             w.start();
