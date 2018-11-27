@@ -6,11 +6,16 @@
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
+<?import servergui.models.MainModel?>
 
 
 
 <BorderPane id="GridPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="servergui.views.MainViewController" styleClass = "root">
+    
+    <fx:define>
+        <MainModel fx:id = "model"/>
+    </fx:define>
+    
     
     <stylesheets>
         <URL value="@css/Main.css"/>

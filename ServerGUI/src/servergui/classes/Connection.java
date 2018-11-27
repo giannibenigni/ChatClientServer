@@ -79,10 +79,21 @@ public class Connection extends Thread{
                 
             }
             
+            System.out.println("--BENVENUTO/A " + ClientName);
+            
+            while(true){
+                String msg = In.readLine();
+                
+                for(Connection connection: OpenConnection){
+                    connection.writeMessage(ClientName + " -> " + msg);
+                }
+                System.out.println(ClientName + " -> " + msg);
+                
+            }
             
             
         } catch (Exception ex) {
-           
+           System.err.println(ex);
         }
         
     }

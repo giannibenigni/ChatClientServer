@@ -19,9 +19,8 @@ import servergui.classes.Connection;
 public class MainModel extends Thread{
     
     private ServerSocket Server;
-    private ArrayList<Connection> OpenConnection;
     
-    
+    private ArrayList<Connection> OpenConnection; 
    
     public MainModel() throws Exception{
         OpenConnection = new ArrayList<Connection>();
