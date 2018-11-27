@@ -19,10 +19,11 @@ public class ServerGUI extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("Forms/MainView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("views/MainView.fxml"));
         
         Scene scene = new Scene(root);
         
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
