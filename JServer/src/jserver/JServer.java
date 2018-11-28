@@ -98,7 +98,7 @@ public class JServer extends Thread{
                 ArrayList<ClientData> clientsData = new ArrayList<>();
                 listSem.acquire();                
                 for (Connect connection: ConnessioniAperte) {
-                    if(connection == this)
+                    if(connection != this)
                         clientsData.add(connection.clientData);
                 }
                 listSem.release();
@@ -106,10 +106,11 @@ public class JServer extends Thread{
                 //invio al client la lista dei clientConnessi
                 writeMessage(JSONParser.getClientListJSON(clientsData).toString());
 
-                //trasmetto il login a tutti i client
+                //trasmetto il login a tutti i client eccetto questo
                 listSem.acquire();
                 for(Connect connection: ConnessioniAperte){
-                    connection.writeMessage(logIn.toString());                    
+                    if(connection != this)
+                        connection.writeMessage(logIn.toString());                    
                 }
                 listSem.release();
                 System.out.println("-- BENVENUTO/A "+ clientData.getUsername());                    

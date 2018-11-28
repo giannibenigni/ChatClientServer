@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import clientgui.models.MainModel ?>
 
-<BorderPane id="root" prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
+<BorderPane id="root" prefHeight="600.0" prefWidth="850.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
     <fx:define>
         <MainModel fx:id="model"/>
     </fx:define>
@@ -18,7 +18,7 @@
     <top>
         <VBox styleClass="loginBox">
             <HBox styleClass="btnLoginBox">
-                <Button text="LOG IN" onAction="$model.logInHandler" />
+                <Button text="LOG IN" disable="${model.userLogged}" onAction="$model.logInHandler" />
                 <Button text="LOG OUT" onAction="$model.logOutHandler" />
             </HBox>
             <HBox styleClass="stateBox">
@@ -36,4 +36,10 @@
             </HBox>
         </VBox> 
     </center>
+    <right>
+        <VBox styleClass="clientListBox">
+            <Label text="UTENTI CONNESSI" />
+            <ListView items="${model.clientsConnected}" />
+        </VBox>        
+    </right>
 </BorderPane>

@@ -74,4 +74,14 @@ public class ClientData {
     public StringProperty ipProperty(){
         return ip;
     }
+
+    /**
+     * Metodo toString
+     * @return String
+     */
+    @Override
+    public String toString() {
+        return "Username: "+username.get()+"\nIp: "+ip.get();
+    }
+    
 }
