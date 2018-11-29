@@ -8,6 +8,7 @@ import clientgui.classes.ClientData;
 import clientgui.classes.ServerData;
 import clientgui.parser.JSONParser;
 import clientgui.views.LoginViewController;
+import java.util.concurrent.Semaphore;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -36,22 +37,24 @@ public class MainModel {
     private BooleanProperty showIp;
     
     private String username = "";
-    private ObservableList<ClientData> clientsConnected;
+    private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
     
     private BufferedReader in = null;
     private PrintStream out = null;
     
     private Socket socket = null;
     
+    private Semaphore disconnectSem;
+    
     /**
      * Metodo Costruttore
      */
     public MainModel(){
+        disconnectSem = new Semaphore(0);
         userLogged = new SimpleBooleanProperty(false);
         messages = new SimpleStringProperty("");     
         messageToSend = new SimpleStringProperty("");
-        showIp = new SimpleBooleanProperty(true);
-        clientsConnected = FXCollections.observableArrayList();
+        showIp = new SimpleBooleanProperty(true);        
     }
     
     /**
@@ -186,7 +189,7 @@ public class MainModel {
         
         this.username = username;
         
-        this.writerThread = new Writer(in, messages, clientsConnected, showIp);                
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem);         
         writerThread.start();
         setUserLogged(true);
     }
@@ -233,29 +236,30 @@ public class MainModel {
      */
     public EventHandler<ActionEvent> logOutHandler = e -> {
         if(!getUserLogged()) return;
-        
-        writerThread.ferma();        
-        
+                
         try{
             out.println(JSONParser.getLogOutJSON(username));
         }catch(JSONException jsonEx){
             System.err.println(jsonEx);
         }
         
+        writerThread.ferma();
+        
         try{
+            disconnectSem.acquire();
             username = "";
             clientsConnected.clear();
             out.flush();
             out.close();
             in.close();
-            socket.close();
-        }catch(IOException ex){
-            System.err.println(ex.getMessage());
+            socket.close();            
+        }catch(IOException | InterruptedException ex){            
+            System.err.println(ex);
         }
         
         setMessages("");
         setUserLogged(false);
-        clientsConnected = FXCollections.observableArrayList();
+        clientsConnected.clear();
     };  
     
     /**

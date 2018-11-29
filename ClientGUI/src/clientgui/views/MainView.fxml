@@ -39,7 +39,7 @@
     <right>
         <VBox styleClass="clientListBox">
             <Label text="UTENTI CONNESSI" />
-            <ListView items="${model.clientsConnected}" />
+            <ListView items="$model.clientsConnected" />
         </VBox>        
     </right>
 </BorderPane>

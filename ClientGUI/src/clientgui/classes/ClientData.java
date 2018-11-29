@@ -1,6 +1,7 @@
 
 package clientgui.classes;
 
+import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -74,6 +75,36 @@ public class ClientData {
     public StringProperty ipProperty(){
         return ip;
     }
+
+    /**
+     * ClientData Equals
+     * @param obj ClientData
+     * @return Boolean
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ClientData other = (ClientData) obj;
+        
+        if(!this.username.get().equals(other.username.get())){
+            return false;
+        }
+        
+        if(!this.ip.get().equals(other.ip.get())){
+            return false;
+        }
+
+        return true;
+    }
+    
 
     /**
      * Metodo toString

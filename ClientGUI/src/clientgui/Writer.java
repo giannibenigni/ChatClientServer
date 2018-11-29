@@ -4,6 +4,8 @@ package clientgui;
 import clientgui.classes.ClientData;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
@@ -20,19 +22,23 @@ public class Writer extends Thread{
     private ObservableList<ClientData> listClient;
     private BooleanProperty showIp;
     
+    private Semaphore disconnectSem;
+    
     /**
      * Metodo Costruttore
      * @param buffer Input Stream del Server
      * @param s Stringa di output
      * @param clients ObservableList of connected clients
      * @param showIp BooleanProperty showIp
+     * @param sem Semaphore 
      */
-    public Writer(BufferedReader buffer, StringProperty s, ObservableList<ClientData> clients, BooleanProperty showIp){
+    public Writer(BufferedReader buffer, StringProperty s, ObservableList<ClientData> clients, BooleanProperty showIp, Semaphore sem){
         this.in = buffer;
         this.outputString = s;
         this.attivo = true;
         this.listClient = clients;
         this.showIp = showIp;
+        this.disconnectSem = sem;
     }
     
     /**
@@ -54,11 +60,11 @@ public class Writer extends Thread{
      * Metodo run del Thread
      */
     @Override
-    public void run() {
+    public void run() {        
         while(attivo){  //TODO ottimizzare 
             try { 
                 JSONObject jsonMessage = new JSONObject(in.readLine());
-                JSONObject clientData;
+                final JSONObject clientData;
                 String usernameToDisplay;
                 
                 switch (jsonMessage.getInt("messageType")) {
@@ -70,28 +76,54 @@ public class Writer extends Thread{
                     case 1: // logIn
                         clientData = jsonMessage.getJSONObject("newUserData"); 
                         usernameToDisplay = showIp.get() ? clientData.getString("username")+"["+clientData.getString("ip")+"]" : clientData.getString("username");
-                        listClient.add(new ClientData(clientData.getString("username"), clientData.getString("ip")));
+                        Platform.runLater(()->{
+                            try{
+                                listClient.add(new ClientData(clientData.getString("username"), clientData.getString("ip")));
+                            }catch(JSONException jsonEx){
+                                System.err.println(jsonEx.getMessage());
+                            }
+                        });
                         scrivi("BENVENUTO "+usernameToDisplay);
                         break;
                     case 2: // logOut
                         clientData = jsonMessage.getJSONObject("userData");
                         usernameToDisplay = showIp.get() ? clientData.getString("username")+"["+clientData.getString("ip")+"]" : clientData.getString("username");
-                        listClient.remove(new ClientData(clientData.getString("username"), clientData.getString("ip")));
+                        
+                        ClientData clientToRemove = new ClientData(clientData.getString("username"), clientData.getString("ip"));
+                        
+                        int index = 0;
+                        boolean trovato = false;
+                        while(index<listClient.size() && !trovato) {
+                            if (listClient.get(index).equals(clientToRemove)){   
+                                //Per rimuovere l'elemento devo fare cosi perchè se no da errore                                 
+                                final int indexRemove = index;
+                                Platform.runLater(() -> {listClient.remove(indexRemove);});
+                                trovato = true;
+                            }
+                            index++;
+                        }
+
                         scrivi("-- "+usernameToDisplay+" HA ABBANDONATO LA CHAT");
                         break;
-                    case 3: // listClients       
-                        listClient.clear();
+                    case 3: // listClients                               
                         JSONArray clients = jsonMessage.getJSONArray("users");
                         for (int i = 0; i < clients.length(); i++) { 
-                            JSONObject user = clients.getJSONObject(i);
-                            listClient.add(new ClientData(user.getString("username"), user.getString("username")));
+                            final JSONObject user = clients.getJSONObject(i);
+                            Platform.runLater(()->{
+                                try{
+                                    listClient.add(new ClientData(user.getString("username"), user.getString("ip")));
+                                }catch(JSONException jsonEx){
+                                    System.err.println(jsonEx.getMessage());
+                                }
+                            });
                         }
                         break;
                     default: break;
-                }
-            } catch (Exception ex) {
-                System.err.println(ex);
+                }                
+            } catch (IOException | JSONException ex) {                
+                System.err.println(ex.getMessage());
             }
         }
+        disconnectSem.release();
     }
 }

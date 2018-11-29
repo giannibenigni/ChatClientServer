@@ -118,8 +118,10 @@ public class JServer extends Thread{
                 while (true) {
                     JSONObject json = new JSONObject(In.readLine());
                     
-                    if(json.getInt("messageType") == 2)
+                    if(json.getInt("messageType") == 2){
                         disconnect(json);
+                        return;
+                    }
                     
                     json.getJSONObject("from").put("ip", clientData.getIp());
                     listSem.acquire();
@@ -152,11 +154,9 @@ public class JServer extends Thread{
                 Out.flush();
                 Out.close();
                 In.close();
-                Client.close(); 
-                return;
+                Client.close();                 
             } catch (Exception ex) {
                 System.err.println(ex);
-                return;
             }            
         }
     }
