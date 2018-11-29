@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.property.StringProperty;
 
 /**
  *
@@ -39,7 +40,7 @@ public class Connection extends Thread{
         
         this.Client = client;
         this.OpenConnection = array;
-        
+
         
         
         try {
@@ -63,7 +64,7 @@ public class Connection extends Thread{
     public void writeMessage(String message) throws InterruptedException{
         
         outSem.acquire();
-        Out.print(message);
+        Out.println(message);
         outSem.release();
         
     }
@@ -92,6 +93,8 @@ public class Connection extends Thread{
                     System.out.println(msg + "******************");
                     connection.writeMessage(ClientName + " -> " + msg);
                 }
+                
+                
                 System.out.println(ClientName + " -> " + msg);
                 
             }
