@@ -11,6 +11,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import servergui.models.MainModel;
 
 /**
  *
@@ -18,14 +20,17 @@ import javafx.scene.control.Label;
  */
 public class MainViewController implements Initializable {
     
+   @FXML
+    private TextField txtMessageToSend;
+    
     @FXML
-    private Label label;
+    private MainModel model;
     
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        model.messageToSendProperty().bindBidirectional(txtMessageToSend.textProperty());
     }    
     
 }

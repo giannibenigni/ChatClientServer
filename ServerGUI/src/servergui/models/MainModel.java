@@ -8,6 +8,8 @@ package servergui.models;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import servergui.classes.Connection;
 
 
@@ -19,12 +21,16 @@ import servergui.classes.Connection;
 public class MainModel extends Thread{
     
     private ServerSocket Server;
+    private StringProperty messageToSend;
     
-    private ArrayList<Connection> OpenConnection; 
+    public ArrayList<Connection> OpenConnection; 
    
     public MainModel() throws Exception{
         OpenConnection = new ArrayList<Connection>();
         Server = new ServerSocket(4000);
+        
+        messageToSend = new SimpleStringProperty("");
+        
         this.start();
         
     }
@@ -35,15 +41,29 @@ public class MainModel extends Thread{
         while(true){
             
             try {
-                
+                System.out.println("*****  In attesa di connessione.\n");
                 Socket client = Server.accept();
+                System.out.println("*****  Connessione accettata da: "+client.getInetAddress()+"\n");
                 OpenConnection.add(new Connection(client,OpenConnection));
                 
-            } catch (Exception e) {
+                OpenConnection.toString();
+                
+            } catch (Exception ex) {
+                System.out.println(ex);
             }
             
         }
         
+    }
+    
+    
+    /**
+     * MessageToSend Property Getter
+     * @return StringProperty
+     */
+    public StringProperty messageToSendProperty(){
+        
+        return messageToSend;
     }
     
     

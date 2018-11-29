@@ -33,12 +33,14 @@ public class Connection extends Thread{
     private ArrayList<Connection> OpenConnection;
 
     
-    public Connection(Socket client,ArrayList<Connection> array){
+    public Connection(Socket client, ArrayList<Connection> array){
         
-        OpenConnection = new ArrayList<Connection>();
+        
         
         this.Client = client;
-        OpenConnection = array;
+        this.OpenConnection = array;
+        
+        
         
         try {
             In = new BufferedReader(new InputStreamReader(Client.getInputStream()));
@@ -71,6 +73,8 @@ public class Connection extends Thread{
     public void run(){
         
         try {
+            
+            
             ClientName = In.readLine();
             
             for(Connection connection : OpenConnection ){
@@ -85,6 +89,7 @@ public class Connection extends Thread{
                 String msg = In.readLine();
                 
                 for(Connection connection: OpenConnection){
+                    System.out.println(msg + "******************");
                     connection.writeMessage(ClientName + " -> " + msg);
                 }
                 System.out.println(ClientName + " -> " + msg);
