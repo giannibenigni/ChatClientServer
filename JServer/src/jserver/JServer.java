@@ -5,17 +5,20 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import org.json.*;
 
 public class JServer extends Thread{
     private ServerSocket Server;
     
-    public ArrayList<Connect> ConnessioniAperte;
+    private ArrayList<Connect> ConnessioniAperte;
+    private Semaphore listSem;
     
     public static void main(String[] args) throws Exception{
         new JServer();
     }
     
     public JServer() throws Exception{
+        listSem = new Semaphore(1);
         ConnessioniAperte = new ArrayList<Connect>();
         Server = new ServerSocket(4000);
         System.out.println("*****  Il server è in attesa sulla porta 4000.");
@@ -29,7 +32,9 @@ public class JServer extends Thread{
                 System.out.println("*****  In attesa di connessione.\n");
                 Socket client = Server.accept();
                 System.out.println("*****  Connessione accettata da: "+client.getInetAddress()+"\n");
+                listSem.acquire();
                 ConnessioniAperte.add(new Connect(client));
+                listSem.release();
             }catch(Exception ex){
                 System.err.println(ex);
             }
@@ -43,7 +48,7 @@ public class JServer extends Thread{
         
         private Semaphore outSem = null;
         
-        private String ClientName = "";
+        private ClientData clientData = new ClientData(); 
         
         public Connect(){}
         
@@ -81,41 +86,78 @@ public class JServer extends Thread{
         public void run(){
             try{                
                 // Da decommentare se si usa il client su console
-                writeMessage("Inserisci il NomeUtente: ");
+                //writeMessage("Inserisci il NomeUtente: ");
                 
-                ClientName = In.readLine();
+                // Leggo i dati di login
+                JSONObject logIn = new JSONObject(In.readLine());
+                clientData.setUsername(logIn.getJSONObject("newUserData").getString("username"));
+                clientData.setIp(Client.getInetAddress().toString()); 
+                logIn.getJSONObject("newUserData").put("ip", Client.getInetAddress().toString());
                 
-                for(Connect connection: ConnessioniAperte){
-                    connection.writeMessage("-- BENVENUTO/A "+ ClientName);                    
+                // mi creo un array con i dati di tutti i client connessi eccetto me stesso
+                ArrayList<ClientData> clientsData = new ArrayList<>();
+                listSem.acquire();                
+                for (Connect connection: ConnessioniAperte) {
+                    if(connection != this)
+                        clientsData.add(connection.clientData);
                 }
-                System.out.println("-- BENVENUTO/A "+ ClientName);                    
+                listSem.release();
                 
-                while (true) {                    
-                    String msg = In.readLine();
-                    if(msg.equalsIgnoreCase("/exit")){
-                        for(Connect connection: ConnessioniAperte){
-                            connection.writeMessage("-- "+ClientName + " ha ABBANDONATO la chat.");
-                        }
-                        System.out.println("-- "+ClientName + " ha ABBANDONATO la chat.");
-                        
-                        ConnessioniAperte.remove(this);
-                        Out.flush();
-                        Out.close();
-                        In.close();
-                        Client.close(); 
+                //invio al client la lista dei clientConnessi
+                writeMessage(JSONParser.getClientListJSON(clientsData).toString());
+
+                //trasmetto il login a tutti i client eccetto questo
+                listSem.acquire();
+                for(Connect connection: ConnessioniAperte){
+                    if(connection != this)
+                        connection.writeMessage(logIn.toString());                    
+                }
+                listSem.release();
+                System.out.println("-- BENVENUTO/A "+ clientData.getUsername());                    
+                
+                while (true) {
+                    JSONObject json = new JSONObject(In.readLine());
+                    
+                    if(json.getInt("messageType") == 2){
+                        disconnect(json);
                         return;
                     }
-
-                    for(Connect connection: ConnessioniAperte){
-                        connection.writeMessage(ClientName+" -> "+msg);
-                    }
-                    System.out.println(ClientName+" -> "+msg);
                     
-                }
-                
+                    json.getJSONObject("from").put("ip", clientData.getIp());
+                    listSem.acquire();
+                    for(Connect connection: ConnessioniAperte){
+                        connection.writeMessage(json.toString());
+                    }
+                    listSem.release();
+                    System.out.println(clientData.getUsername()+" -> "+json.getString("messageText"));
+                }                
             }catch(Exception ex){
                 System.err.println(ex);
             }
+        }
+        
+        /**
+         * Metodo che gestisce la disconnessione del client
+         * @param json JSONObject jsonMessage from client
+         */
+        public void disconnect(JSONObject json){
+            try {                
+                json.getJSONObject("userData").put("ip", clientData.getIp());
+                listSem.acquire();
+                for(Connect connection: ConnessioniAperte){
+                    connection.writeMessage(json.toString());
+                }
+                ConnessioniAperte.remove(this);
+                listSem.release();
+                System.out.println("-- "+clientData.getUsername() + " ha ABBANDONATO la chat.");
+
+                Out.flush();
+                Out.close();
+                In.close();
+                Client.close();                 
+            } catch (Exception ex) {
+                System.err.println(ex);
+            }            
         }
     }
 }

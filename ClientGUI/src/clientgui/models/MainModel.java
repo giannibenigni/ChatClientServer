@@ -4,12 +4,17 @@ package clientgui.models;
 import java.io.*;
 import java.net.*;
 import clientgui.Writer;
+import clientgui.classes.ClientData;
 import clientgui.classes.ServerData;
+import clientgui.parser.JSONParser;
 import clientgui.views.LoginViewController;
+import java.util.concurrent.Semaphore;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import org.json.JSONException;
 
 /**
  *
@@ -28,19 +34,27 @@ public class MainModel {
     private BooleanProperty userLogged;
     private StringProperty messages;
     private StringProperty messageToSend;
+    private BooleanProperty showIp;
+    
+    private String username = "";
+    private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
     
     private BufferedReader in = null;
     private PrintStream out = null;
     
     private Socket socket = null;
     
+    private Semaphore disconnectSem;
+    
     /**
      * Metodo Costruttore
      */
     public MainModel(){
+        disconnectSem = new Semaphore(0);
         userLogged = new SimpleBooleanProperty(false);
         messages = new SimpleStringProperty("");     
         messageToSend = new SimpleStringProperty("");
+        showIp = new SimpleBooleanProperty(true);        
     }
     
     /**
@@ -92,6 +106,22 @@ public class MainModel {
     }
     
     /**
+     * ShowIp Getter
+     * @return Boolean
+     */
+    public boolean getShowIp(){
+        return showIp.get();
+    }
+    
+    /**
+     * ShowIp Setter
+     * @param value Boolean 
+     */
+    public void setShowIp(boolean value){
+        this.showIp.set(value);
+    }
+    
+    /**
      * UserLogged Propety Getter
      * @return BooleanProperty
      */
@@ -114,6 +144,22 @@ public class MainModel {
     public StringProperty messageToSendProperty(){
         return messageToSend;
     }
+    
+    /**
+     * ShowIp Property Getter
+     * @return BooleanProperty
+     */
+    public BooleanProperty showIpProperty(){
+        return this.showIp;
+    }
+    
+    /**
+     * ClientsConnected Getter
+     * @return ObservableList of ClientData
+     */
+    public ObservableList<ClientData> getClientsConnected(){
+        return clientsConnected;
+    }
 
     /**
      * Metodo che effettua la connessione al socket, setta lo username del client
@@ -133,12 +179,17 @@ public class MainModel {
             alert.showAndWait();
             
             System.exit(1);
-        } 
+        }
         
-        this.writerThread = new Writer(in, messages);
+        try {
+            out.println(JSONParser.getLogInJSON(username).toString());
+        } catch (JSONException ex) {
+            System.err.println(ex);
+        }
         
-        out.println(username);               
+        this.username = username;
         
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem);         
         writerThread.start();
         setUserLogged(true);
     }
@@ -185,22 +236,30 @@ public class MainModel {
      */
     public EventHandler<ActionEvent> logOutHandler = e -> {
         if(!getUserLogged()) return;
+                
+        try{
+            out.println(JSONParser.getLogOutJSON(username));
+        }catch(JSONException jsonEx){
+            System.err.println(jsonEx);
+        }
         
-        writerThread.ferma();        
-        //invio un messaggio al server per dirgli che mi sto disconnettendo
-        out.println("/exit");
+        writerThread.ferma();
         
         try{
+            disconnectSem.acquire();
+            username = "";
+            clientsConnected.clear();
             out.flush();
             out.close();
             in.close();
-            socket.close();
-        }catch(IOException ex){
-            System.err.println(ex.getMessage());
+            socket.close();            
+        }catch(IOException | InterruptedException ex){            
+            System.err.println(ex);
         }
         
         setMessages("");
         setUserLogged(false);
+        clientsConnected.clear();
     };  
     
     /**
@@ -216,7 +275,12 @@ public class MainModel {
      * Manda un messaggio al server
      */
     public EventHandler<ActionEvent> sendMessageHandler = e -> {
-        out.println(getMessageToSend());
+        try{
+            out.println(JSONParser.getNormalMessageJSON(getMessageToSend(), username));
+        }catch(JSONException ex){
+            System.err.println(ex);
+        }
+        
         setMessageToSend("");
     };
     
