@@ -32,20 +32,22 @@ public class Connection extends Thread{
     private String ClientName = "";
     
     private ArrayList<Connection> OpenConnection;
+    
+    private StringProperty outputString;
 
     
-    public Connection(Socket client, ArrayList<Connection> array){
+    public Connection(Socket client, ArrayList<Connection> array, StringProperty outputS, BufferedReader in, PrintStream out){
         
         
         
         this.Client = client;
         this.OpenConnection = array;
-
+        outputString = outputS;
         
         
         try {
-            In = new BufferedReader(new InputStreamReader(Client.getInputStream()));
-            Out = new PrintStream(Client.getOutputStream(),true);
+            In = in;
+            Out = out;
         } catch (Exception e) {
             
             try {
@@ -78,24 +80,39 @@ public class Connection extends Thread{
             
             ClientName = In.readLine();
             
+            outputString.set(outputString.get() + "\n" + "<Server> -> BENVENUTO/A " + ClientName);
+            
             for(Connection connection : OpenConnection ){
                 
-                connection.writeMessage("--BENVENUTO/A " + ClientName);
+                connection.writeMessage("<Server> -> BENVENUTO/A " + ClientName);
                 
             }
-            
-            System.out.println("--BENVENUTO/A " + ClientName);
+             
             
             while(true){
-                String msg = In.readLine();
                 
-                for(Connection connection: OpenConnection){
-                    System.out.println(msg + "******************");
-                    connection.writeMessage(ClientName + " -> " + msg);
+                String msg = In.readLine();
+                if(msg.equalsIgnoreCase("/exit")){
+                    for(Connection connection: OpenConnection){
+                        connection.writeMessage("<Server> -> " + ClientName + " ha ABBANDONATO la chat");
+                    }
+                    outputString.set(outputString.get() + "\n" + "<Server> -> " + ClientName + " ha ABBANDONATO la chat");
+                    
+                    OpenConnection.remove(this);
+                    Out.flush();
+                    Out.close();
+                    In.close();
+                    Client.close();
+                    return;
+                }else{
+                    outputString.set(outputString.get() + "\n" + ClientName + " -> " + msg);
+
+                    for(Connection connection: OpenConnection){
+                        connection.writeMessage(ClientName + " -> " + msg);
+                    }
                 }
                 
                 
-                System.out.println(ClientName + " -> " + msg);
                 
             }
             
