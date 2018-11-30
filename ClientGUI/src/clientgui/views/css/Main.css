@@ -1,60 +1,50 @@
 
-.root{
-    -fx-font-family: "Verdana";
-    -fx-background-color: #dedede;
-    -fx-padding: 10px;
+.topMenu{
+    -fx-background-color: rgb(58,69,88);
 }
 
-.loginBox{
-    -fx-background-color: #c4c4c4; 
-    -fx-background-radius: 5.0;
-    -fx-background-insets: 5;
-    
-    -fx-border-radius: 5.0;
-    -fx-border-width: 1px;
-    -fx-border-insets: 5;
-    -fx-border-color: black;
-        
-    -fx-padding: 15px;
-    -fx-alignment: center;
-    -fx-spacing: 10;
+.topMenu-item:hover{
+    -fx-background-color: #405361;
 }
 
-.btnLoginBox{
-    -fx-alignment: center;
-    -fx-spacing: 20;
+.topMenu-item:pressed{
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+    -fx-text-fill: #0099ff;
 }
 
-.centerBox{    
-    -fx-alignment: center;
-    -fx-padding: 15px;
-    -fx-spacing: 10;
-    
-    -fx-border-radius: 5.0;
-    -fx-border-width: 1px;
-    -fx-border-color: black;
-    -fx-border-insets: 5;
-    
+.topMenu-label{
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-family: Calibri;
+    -fx-font-weight: bold;
 }
 
-.sendBox{
-    -fx-alignment: center;
-    -fx-spacing: 20;
+.leftMenu{
+    -fx-background-color: #586988;
 }
 
-.stateBox{
-    -fx-alignment: center;
-    -fx-spacing: 20;
+.leftMenu-item:hover{
+    -fx-background-color: #405361;
+    -fx-border-color: rgb(22,169,250);
+    -fx-border-width: 0px 0px 0px 3px;
 }
 
-.clientListBox{
-    -fx-alignment: center;
-    -fx-spacing: 10;
-    
-    -fx-border-radius: 5.0;
-    -fx-border-width: 1px;
-    -fx-border-color: black;
-    -fx-border-insets: 5;
-    
-    -fx-padding: 15px;
+.leftMenu-item:pressed{
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+    -fx-text-fill: #0099ff;
+}
+
+.leftMenuTitle-label{
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-family: Calibri;
+    -fx-font-weight: bold;
+}
+
+.leftMenuItem-label{
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-family: Calibri;    
 }

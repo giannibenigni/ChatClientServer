@@ -31,10 +31,10 @@ import org.json.JSONException;
 public class MainModel {
     private Writer writerThread;
     
-    private BooleanProperty userLogged;
-    private StringProperty messages;
-    private StringProperty messageToSend;
-    private BooleanProperty showIp;
+    private final BooleanProperty userLogged;
+    private final  StringProperty messages;
+    private final StringProperty messageToSend;
+    private final BooleanProperty showIp;
     
     private String username = "";
     private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
