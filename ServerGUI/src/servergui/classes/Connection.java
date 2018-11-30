@@ -15,6 +15,7 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -31,19 +32,17 @@ public class Connection extends Thread{
     
     private String ClientName = "";
     
-    private ArrayList<Connection> OpenConnection;
+    private ObservableList<Connection> OpenConnection;
     
     private StringProperty outputString;
 
     
-    public Connection(Socket client, ArrayList<Connection> array, StringProperty outputS, BufferedReader in, PrintStream out){
-        
+    public Connection(Socket client, ObservableList<Connection> array, StringProperty outputS, BufferedReader in, PrintStream out){
         
         
         this.Client = client;
         this.OpenConnection = array;
         outputString = outputS;
-        
         
         try {
             In = in;
@@ -80,23 +79,23 @@ public class Connection extends Thread{
             
             ClientName = In.readLine();
             
-            outputString.set(outputString.get() + "\n" + "<Server> -> BENVENUTO/A " + ClientName);
+            outputString.set(outputString.get() + "\n" + "<Server> BENVENUTO/A " + ClientName);
+            
             
             for(Connection connection : OpenConnection ){
                 
-                connection.writeMessage("<Server> -> BENVENUTO/A " + ClientName);
-                
+                connection.writeMessage("<Server> BENVENUTO/A " + ClientName);
             }
-             
+                        
             
             while(true){
                 
                 String msg = In.readLine();
                 if(msg.equalsIgnoreCase("/exit")){
                     for(Connection connection: OpenConnection){
-                        connection.writeMessage("<Server> -> " + ClientName + " ha ABBANDONATO la chat");
+                        connection.writeMessage("<Server> "  + ClientName + " ha ABBANDONATO la chat");
                     }
-                    outputString.set(outputString.get() + "\n" + "<Server> -> " + ClientName + " ha ABBANDONATO la chat");
+                    outputString.set(outputString.get() + "\n" + "<Server> " + ClientName + " ha ABBANDONATO la chat");
                     
                     OpenConnection.remove(this);
                     Out.flush();
@@ -105,10 +104,10 @@ public class Connection extends Thread{
                     Client.close();
                     return;
                 }else{
-                    outputString.set(outputString.get() + "\n" + ClientName + " -> " + msg);
+                    outputString.set(outputString.get() + "\n<" + ClientName + "> " + msg);
 
                     for(Connection connection: OpenConnection){
-                        connection.writeMessage(ClientName + " -> " + msg);
+                        connection.writeMessage("<" + ClientName + "> " + msg);
                     }
                 }
                 
@@ -121,6 +120,16 @@ public class Connection extends Thread{
            System.err.println(ex);
         }
         
+    }
+    
+    
+    /**
+     * Metodo che serve per stampare la lista dei client
+     * @return 
+     */
+    @Override
+    public String toString(){
+        return "Username: " + ClientName + "\nIP: " + Client.getInetAddress();
     }
     
     

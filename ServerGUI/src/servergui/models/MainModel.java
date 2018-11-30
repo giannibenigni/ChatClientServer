@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import servergui.classes.Connection;
@@ -30,17 +32,20 @@ public class MainModel extends Thread{
     private StringProperty messages;
     private BufferedReader In;
     private PrintStream Out;
+    private ObservableList<Connection> clientsConnected = FXCollections.observableArrayList();
     
-    public ArrayList<Connection> OpenConnection; 
+    public ObservableList<Connection> OpenConnection; 
    
     public MainModel() throws Exception{
-        OpenConnection = new ArrayList<Connection>();
+        //OpenConnection = new ArrayList<Connection>();
+        OpenConnection = FXCollections.observableArrayList();
         Server = new ServerSocket(4000);
         
         messageToSend = new SimpleStringProperty("");
-        messages = new SimpleStringProperty("") {};
+        messages = new SimpleStringProperty("");
         
         this.start();
+        
         
     }
     
@@ -65,7 +70,7 @@ public class MainModel extends Thread{
             } catch (Exception ex) {
                 System.out.println(ex);
             }
-            
+                
         }
         
     }
@@ -120,6 +125,14 @@ public class MainModel extends Thread{
         return messageToSend;
     }
     
+    /**
+     * Getter dei client Connessi
+     * @return  ObserveList of Connection
+     */
+    public ObservableList<Connection> getOpenConnection(){
+        return OpenConnection;
+    }
+    
     
     
     //EVENTS ----------------------------------------------------------
@@ -130,8 +143,8 @@ public class MainModel extends Thread{
     public EventHandler<ActionEvent> sendMessageHandler = e -> {
         
         if(OpenConnection.size() != 0){
-            Out.println("<Server> ->" + getMesssageToSend());
-            messages.set(messages.get() + "\n"+ "<Server> -> " + getMesssageToSend());
+            Out.println("<Server> " + getMesssageToSend());
+            messages.set(messages.get() + "\n"+ "<Server> " + getMesssageToSend());
             setMessageTosend("");
         }
     };

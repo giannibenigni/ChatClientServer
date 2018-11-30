@@ -33,9 +33,9 @@
 
             </VBox>
 
-            <VBox styleClass = "listBox">
+            <VBox styleClass = "clientListBox">
                 <Label text = "Utenti Online: "/>
-                <ListView prefHeight = "400"/>
+                <ListView prefHeight = "400" items="$model.OpenConnection"/>
             </VBox>
         </HBox>
     </center>
