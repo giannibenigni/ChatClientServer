@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -30,14 +31,18 @@ public class MainModel extends Thread{
     private ServerSocket Server;
     private StringProperty messageToSend;
     private StringProperty messages;
+    
     private BufferedReader In;
     private PrintStream Out;
-    private ObservableList<Connection> clientsConnected = FXCollections.observableArrayList();
     
-    public ObservableList<Connection> OpenConnection; 
+    public ObservableList<Connection> OpenConnection;
+    
+    private Semaphore listSem;
    
     public MainModel() throws Exception{
-        //OpenConnection = new ArrayList<Connection>();
+        
+        listSem = new Semaphore(1);
+        
         OpenConnection = FXCollections.observableArrayList();
         Server = new ServerSocket(4000);
         
@@ -64,8 +69,11 @@ public class MainModel extends Thread{
                 
                 System.out.println("*****  Connessione accettata da: " + Client.getInetAddress()+"\n");
                 
+                listSem.acquire();
+                
                 OpenConnection.add(new Connection(Client,OpenConnection,messages,In,Out));
                 
+                listSem.release();
                 
             } catch (Exception ex) {
                 System.out.println(ex);

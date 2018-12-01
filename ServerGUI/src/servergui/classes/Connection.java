@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import org.json.*;
 
 /**
  *
@@ -76,8 +77,12 @@ public class Connection extends Thread{
         
         try {
             
+            //Legge i dati di login
+            JSONObject logIn = new JSONObject(In.readLine());
+            ClientName = logIn.getJSONObject("newUserData").getString("username");
+            logIn.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());
             
-            ClientName = In.readLine();
+            //ClientName = In.readLine();
             
             outputString.set(outputString.get() + "\n" + "<Server> BENVENUTO/A " + ClientName);
             
