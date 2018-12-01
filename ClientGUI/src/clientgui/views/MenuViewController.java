@@ -1,10 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package clientgui.views;
 
+import clientgui.models.MainModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,12 +20,19 @@ import javafx.scene.layout.BorderPane;
  */
 public class MenuViewController implements Initializable {
 
+    private MainModel model;
+    
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {   }    
+    public void initialize(URL url, ResourceBundle rb) {  
+    }    
 
+    public void setModel(MainModel model){
+        this.model = model;
+    }
+    
     @FXML
     private void globalChat_click(MouseEvent event) {
         BorderPane borderPaneMain = (BorderPane) ((Node) event.getSource()).getScene().getRoot();
@@ -48,10 +52,20 @@ public class MenuViewController implements Initializable {
     private void loadUI(String uiName, BorderPane borderPane){
         Parent ui = null;
         try{
-            ui = FXMLLoader.load(getClass().getResource(uiName+".fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(uiName+".fxml"));
+            ui = fxmlLoader.load();
+            switch (uiName) {
+                case "GlobalChatView":
+                    fxmlLoader.<GlobalChatViewController>getController().setModel(model);
+                    break;
+                case "PrivateMessageView":
+                    break;
+                default: break;
+            }            
         }catch(IOException ex){
             System.err.println(ex.getMessage());
         }
         borderPane.setCenter(ui);
+        borderPane.requestFocus();
     }
 }

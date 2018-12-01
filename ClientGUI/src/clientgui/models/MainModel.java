@@ -21,6 +21,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.json.JSONException;
 
@@ -177,8 +178,9 @@ public class MainModel {
             alert.setHeaderText("ERRORE CONNESSIONE AL SERVER");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
+            return;
             
-            System.exit(1);
+//            System.exit(1);
         }
         
         try {
@@ -199,7 +201,7 @@ public class MainModel {
     /**
      * Apro la finestra di Login
      */
-    public EventHandler<ActionEvent> logInHandler = e -> {
+    public EventHandler<MouseEvent> logInHandler = e -> {
         try{
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientgui/views/LoginView.fxml"));                    
             Stage stage = new Stage();            
@@ -226,7 +228,7 @@ public class MainModel {
      * LogIn Handler Getter
      * @return EventHandler
      */
-    public EventHandler<ActionEvent> getLogInHandler(){
+    public EventHandler<MouseEvent> getLogInHandler(){
         return this.logInHandler;
     }
     
@@ -234,7 +236,7 @@ public class MainModel {
      * LOG OUT Handler
      * Chiudo la connessione con il socket e stoppo il thread che scrive i messaggi
      */
-    public EventHandler<ActionEvent> logOutHandler = e -> {
+    public EventHandler<MouseEvent> logOutHandler = e -> {
         if(!getUserLogged()) return;
                 
         try{
@@ -266,7 +268,7 @@ public class MainModel {
      * LogOut Handler Getter
      * @return EventHandler
      */
-    public EventHandler<ActionEvent> getLogOutHandler(){
+    public EventHandler<MouseEvent> getLogOutHandler(){
         return this.logOutHandler;
     }
 
@@ -274,7 +276,9 @@ public class MainModel {
      * SEND MESSAGE Handler
      * Manda un messaggio al server
      */
-    public EventHandler<ActionEvent> sendMessageHandler = e -> {
+    public EventHandler<MouseEvent> sendMessageHandler = e -> {
+        if(!getUserLogged()) return;
+        
         try{
             out.println(JSONParser.getNormalMessageJSON(getMessageToSend(), username));
         }catch(JSONException ex){
@@ -288,7 +292,7 @@ public class MainModel {
      * SendMessage Handler Getter
      * @return EventHandler
      */
-    public EventHandler<ActionEvent> getSendMessageHandler(){
+    public EventHandler<MouseEvent> getSendMessageHandler(){
         return this.sendMessageHandler;
     }
 }
