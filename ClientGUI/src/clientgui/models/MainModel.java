@@ -10,12 +10,13 @@ import clientgui.parser.JSONParser;
 import clientgui.views.LoginViewController;
 import java.util.concurrent.Semaphore;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -38,7 +39,8 @@ public class MainModel {
     private final BooleanProperty showIp;
     
     private String username = "";
-    private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
+    private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+//    private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
     
     private BufferedReader in = null;
     private PrintStream out = null;
@@ -159,6 +161,22 @@ public class MainModel {
      * @return ObservableList of ClientData
      */
     public ObservableList<ClientData> getClientsConnected(){
+        return clientsConnected.get();
+    }
+    
+    /**
+     * ClientsConnected Setter
+     * @param value ObservableList of ClientData
+     */
+    public void setClientsConnected(ObservableList<ClientData> value){
+        this.clientsConnected.set(value);
+    }
+    
+    /**
+     * ClientsConnected Property Getter
+     * @return ObjectProperty
+     */
+    public ObjectProperty<ObservableList<ClientData>> clientsConnectedProperty(){
         return clientsConnected;
     }
 
@@ -250,7 +268,7 @@ public class MainModel {
         try{
             disconnectSem.acquire();
             username = "";
-            clientsConnected.clear();
+            clientsConnected.get().clear();
             out.flush();
             out.close();
             in.close();
@@ -261,7 +279,7 @@ public class MainModel {
         
         setMessages("");
         setUserLogged(false);
-        clientsConnected.clear();
+        clientsConnected.get().clear();
     };  
     
     /**

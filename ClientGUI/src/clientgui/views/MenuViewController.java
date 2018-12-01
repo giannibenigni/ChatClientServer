@@ -45,6 +45,12 @@ public class MenuViewController implements Initializable {
         loadUI("PrivateMessageView", borderPaneMain);
     }    
     
+    @FXML
+    private void listOnline_click(MouseEvent event) {
+        BorderPane borderPaneMain = (BorderPane) ((Node) event.getSource()).getScene().getRoot();
+        loadUI("ListOnlineView", borderPaneMain);
+    }
+   
     /**
      * Metodo che carica una ui
      * @param ui Strign name
@@ -59,6 +65,9 @@ public class MenuViewController implements Initializable {
                     fxmlLoader.<GlobalChatViewController>getController().setModel(model);
                     break;
                 case "PrivateMessageView":
+                    break;
+                case "ListOnlineView":
+                    fxmlLoader.<ListOnlineViewController>getController().setModel(model);
                     break;
                 default: break;
             }            

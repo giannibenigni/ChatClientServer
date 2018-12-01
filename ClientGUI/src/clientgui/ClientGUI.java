@@ -2,7 +2,6 @@
 package clientgui;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,24 +24,21 @@ public class ClientGUI extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("views/MainView.fxml"));
         Scene scene = new Scene(root);
         
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
+        root.setOnMousePressed((MouseEvent event) -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
         });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                stage.setX(event.getScreenX() - xOffset);
-                stage.setY(event.getScreenY() - yOffset);
-                stage.setOpacity(0.7f);
-            }
+        
+        root.setOnMouseDragged((MouseEvent event) -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+            stage.setOpacity(0.7f);
         });
+        
         root.setOnDragDone((e) -> {
             stage.setOpacity(1.0f);
         });
+        
         root.setOnMouseReleased((e) -> {
             stage.setOpacity(1.0f);
         });
