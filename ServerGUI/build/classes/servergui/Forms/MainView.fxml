@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.* ?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+
+
+<BorderPane id="GridPane" xmlns:fx="http://javafx.com/fxml/1" fx:controller="servergui.Forms.MainViewController" styleClass = "root">
+    
+    <stylesheets>
+        <URL value="@css/Main.css"/>
+    </stylesheets>
+    
+    <center>
+        <HBox>
+            <VBox styleClass = "centerBox">
+
+                <TextArea editable = "false" prefWidth = "400" prefHeight = "400"/>
+                <HBox styleClass = "sendBox">
+                    <TextField prefWidth = "400"/>
+                    <Button text = "INVIA" prefWidth = "100"/>
+                </HBox>
+
+            </VBox>
+
+            <VBox styleClass = "listBox">
+                <Label text = "Utenti Online: "/>
+                <ListView prefHeight = "400"/>
+            </VBox>
+        </HBox>
+    </center>
+    
+</BorderPane>
+
