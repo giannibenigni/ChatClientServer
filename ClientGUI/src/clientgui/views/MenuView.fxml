@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="800.0" prefWidth="250.0" styleClass="leftMenu" stylesheets="@css/Main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MenuViewController">
+   <children>
+      <Label prefHeight="0.0" prefWidth="250.0" styleClass="leftMenuTitle-label" stylesheets="@css/Main.css" text="CHAT">
+         <VBox.margin>
+            <Insets bottom="80.0" left="20.0" top="50.0" />
+         </VBox.margin>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </Label>
+      <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" onMouseClicked="#globalChat_click" prefWidth="250.0" spacing="20.0" styleClass="leftMenu-item" stylesheets="@css/Main.css">
+         <children>
+            <ImageView pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/groupChatIcon.png" />
+               </image>
+            </ImageView>
+            <Label styleClass="leftMenuItem-label" stylesheets="@css/Main.css" text="GLOBAL CHAT" />
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" onMouseClicked="#privateMessage_click" prefWidth="250.0" spacing="20.0" styleClass="leftMenu-item" stylesheets="@css/Main.css">
+         <children>
+            <ImageView pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/privateMessageIcon.png" />
+               </image>
+            </ImageView>
+            <Label styleClass="leftMenuItem-label" stylesheets="@css/Main.css" text="PRIVATE MESSAGE" />
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
+      <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" onMouseClicked="#listOnline_click" prefWidth="250.0" spacing="20.0" styleClass="leftMenu-item" stylesheets="@css/Main.css">
+         <children>
+            <ImageView pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/listOnlineIcon.png" />
+               </image>
+            </ImageView>
+            <Label styleClass="leftMenuItem-label" stylesheets="@css/Main.css" text="LIST ONLINE" />
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

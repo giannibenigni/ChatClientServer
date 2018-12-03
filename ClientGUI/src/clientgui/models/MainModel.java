@@ -7,21 +7,19 @@ import clientgui.Writer;
 import clientgui.classes.ClientData;
 import clientgui.classes.ServerData;
 import clientgui.parser.JSONParser;
-import clientgui.views.LoginViewController;
 import java.util.concurrent.Semaphore;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
+import javafx.scene.input.MouseEvent;
 import org.json.JSONException;
 
 /**
@@ -31,13 +29,13 @@ import org.json.JSONException;
 public class MainModel {
     private Writer writerThread;
     
-    private BooleanProperty userLogged;
-    private StringProperty messages;
-    private StringProperty messageToSend;
-    private BooleanProperty showIp;
+    private final BooleanProperty userLogged;
+    private final  StringProperty messages;
+    private final StringProperty messageToSend;
+    private final BooleanProperty showIp;
     
     private String username = "";
-    private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
+    private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     
     private BufferedReader in = null;
     private PrintStream out = null;
@@ -158,6 +156,22 @@ public class MainModel {
      * @return ObservableList of ClientData
      */
     public ObservableList<ClientData> getClientsConnected(){
+        return clientsConnected.get();
+    }
+    
+    /**
+     * ClientsConnected Setter
+     * @param value ObservableList of ClientData
+     */
+    public void setClientsConnected(ObservableList<ClientData> value){
+        this.clientsConnected.set(value);
+    }
+    
+    /**
+     * ClientsConnected Property Getter
+     * @return ObjectProperty
+     */
+    public ObjectProperty<ObservableList<ClientData>> clientsConnectedProperty(){
         return clientsConnected;
     }
 
@@ -166,8 +180,9 @@ public class MainModel {
      * e fa partire il thread per la scrittura dei messaggi del server
      * @param serverData ServerData serverData (ip, port)
      * @param username String username
+     * @return true se si è riuscito a connettere. altrimenti false
      */
-    public void connectToSocket(ServerData serverData, String username){
+    public boolean connectToSocket(ServerData serverData, String username){
         try{        
             socket = new Socket(InetAddress.getByName(serverData.getIp()),  serverData.getPort()); 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -177,8 +192,9 @@ public class MainModel {
             alert.setHeaderText("ERRORE CONNESSIONE AL SERVER");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
+            return false;
             
-            System.exit(1);
+//            System.exit(1);
         }
         
         try {
@@ -192,49 +208,17 @@ public class MainModel {
         this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem);         
         writerThread.start();
         setUserLogged(true);
+        
+        return true;
     }
     
-    // EVENTS -------------------------------------------------
-    
-    /**
-     * Apro la finestra di Login
-     */
-    public EventHandler<ActionEvent> logInHandler = e -> {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientgui/views/LoginView.fxml"));                    
-            Stage stage = new Stage();            
-            
-            //TODO cercare un modo per fare apparire la finestra di login sopra a tutto però senza compromettere la alertBox di errore della connessione al server
-//            stage.setAlwaysOnTop(true);
-//            stage.initModality(Modality.APPLICATION_MODAL);            
-            
-            stage.setScene(new Scene(loader.load()));
-            stage.setResizable(false);
-            
-            LoginViewController controller = loader.<LoginViewController>getController();
-            
-            controller.setMainModel(this);
-            
-            stage.showAndWait();
-                
-        }catch(IOException ex){
-            System.err.println(ex.getMessage());
-        }
-    };  
-    
-    /**
-     * LogIn Handler Getter
-     * @return EventHandler
-     */
-    public EventHandler<ActionEvent> getLogInHandler(){
-        return this.logInHandler;
-    }
+    // EVENTS -------------------------------------------------    
     
     /**
      * LOG OUT Handler
      * Chiudo la connessione con il socket e stoppo il thread che scrive i messaggi
      */
-    public EventHandler<ActionEvent> logOutHandler = e -> {
+    public EventHandler<MouseEvent> logOutHandler = e -> {
         if(!getUserLogged()) return;
                 
         try{
@@ -248,7 +232,7 @@ public class MainModel {
         try{
             disconnectSem.acquire();
             username = "";
-            clientsConnected.clear();
+            clientsConnected.get().clear();
             out.flush();
             out.close();
             in.close();
@@ -259,14 +243,14 @@ public class MainModel {
         
         setMessages("");
         setUserLogged(false);
-        clientsConnected.clear();
+        clientsConnected.get().clear();
     };  
     
     /**
      * LogOut Handler Getter
      * @return EventHandler
      */
-    public EventHandler<ActionEvent> getLogOutHandler(){
+    public EventHandler<MouseEvent> getLogOutHandler(){
         return this.logOutHandler;
     }
 
@@ -274,7 +258,9 @@ public class MainModel {
      * SEND MESSAGE Handler
      * Manda un messaggio al server
      */
-    public EventHandler<ActionEvent> sendMessageHandler = e -> {
+    public EventHandler<MouseEvent> sendMessageHandler = e -> {
+        if(!getUserLogged()) return;
+        
         try{
             out.println(JSONParser.getNormalMessageJSON(getMessageToSend(), username));
         }catch(JSONException ex){
@@ -288,7 +274,7 @@ public class MainModel {
      * SendMessage Handler Getter
      * @return EventHandler
      */
-    public EventHandler<ActionEvent> getSendMessageHandler(){
+    public EventHandler<MouseEvent> getSendMessageHandler(){
         return this.sendMessageHandler;
     }
 }

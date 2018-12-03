@@ -1,0 +1,12 @@
+
+.title{
+    -fx-font-size: 26px;
+    -fx-font-family: Calibri;
+    -fx-font-weight: bold;
+}
+
+.listView{
+    -fx-focus-color: whitesmoke;    
+    -fx-faint-focus-color: whitesmoke;
+    -fx-border-color: whitesmoke;
+}

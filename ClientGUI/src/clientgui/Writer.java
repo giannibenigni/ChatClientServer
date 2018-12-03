@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.Semaphore;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import org.json.*;
@@ -19,7 +20,7 @@ public class Writer extends Thread{
     private boolean attivo;
     private BufferedReader in;    
     private StringProperty outputString;
-    private ObservableList<ClientData> listClient;
+    private ObjectProperty<ObservableList<ClientData>> listClient;
     private BooleanProperty showIp;
     
     private Semaphore disconnectSem;
@@ -32,7 +33,7 @@ public class Writer extends Thread{
      * @param showIp BooleanProperty showIp
      * @param sem Semaphore 
      */
-    public Writer(BufferedReader buffer, StringProperty s, ObservableList<ClientData> clients, BooleanProperty showIp, Semaphore sem){
+    public Writer(BufferedReader buffer, StringProperty s, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem){
         this.in = buffer;
         this.outputString = s;
         this.attivo = true;
@@ -78,7 +79,7 @@ public class Writer extends Thread{
                         usernameToDisplay = showIp.get() ? clientData.getString("username")+"["+clientData.getString("ip")+"]" : clientData.getString("username");
                         Platform.runLater(()->{
                             try{
-                                listClient.add(new ClientData(clientData.getString("username"), clientData.getString("ip")));
+                                listClient.get().add(new ClientData(clientData.getString("username"), clientData.getString("ip")));
                             }catch(JSONException jsonEx){
                                 System.err.println(jsonEx.getMessage());
                             }
@@ -93,11 +94,11 @@ public class Writer extends Thread{
                         
                         int index = 0;
                         boolean trovato = false;
-                        while(index<listClient.size() && !trovato) {
-                            if (listClient.get(index).equals(clientToRemove)){   
+                        while(index<listClient.get().size() && !trovato) {
+                            if (listClient.get().get(index).equals(clientToRemove)){   
                                 //Per rimuovere l'elemento devo fare cosi perchè se no da errore                                 
                                 final int indexRemove = index;
-                                Platform.runLater(() -> {listClient.remove(indexRemove);});
+                                Platform.runLater(() -> {listClient.get().remove(indexRemove);});
                                 trovato = true;
                             }
                             index++;
@@ -111,7 +112,7 @@ public class Writer extends Thread{
                             final JSONObject user = clients.getJSONObject(i);
                             Platform.runLater(()->{
                                 try{
-                                    listClient.add(new ClientData(user.getString("username"), user.getString("ip")));
+                                    listClient.get().add(new ClientData(user.getString("username"), user.getString("ip")));
                                 }catch(JSONException jsonEx){
                                     System.err.println(jsonEx.getMessage());
                                 }

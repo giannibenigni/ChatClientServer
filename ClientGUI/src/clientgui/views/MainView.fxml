@@ -1,45 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.* ?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import clientgui.models.MainModel ?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
-<BorderPane id="root" prefHeight="600.0" prefWidth="850.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController" styleClass="root">
+<?import clientgui.models.MainModel?>
+
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController">
     <fx:define>
-        <MainModel fx:id="model"/>
+        <MainModel fx:id="model" />
     </fx:define>
-    <stylesheets>
-        <URL value="@css/Main.css" />
-    </stylesheets>
     <top>
-        <VBox styleClass="loginBox">
-            <HBox styleClass="btnLoginBox">
-                <Button text="LOG IN" disable="${model.userLogged}" onAction="$model.logInHandler" />
-                <Button text="LOG OUT" onAction="$model.logOutHandler" />
+      <AnchorPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="60.0" styleClass="topMenu" stylesheets="@css/Main.css" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#open_sidebar" styleClass="topMenu-item" stylesheets="@css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/menuIcon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
             </HBox>
-            <HBox styleClass="stateBox">
-                <Label text="Connesso:" />
-                <Label text="${model.userLogged}" />
+            <HBox alignment="CENTER" layoutX="876.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#logIn_click" spacing="20.0" styleClass="topMenu-item" stylesheets="@css/Main.css">
+                     <children>
+                        <Label styleClass="topMenu-label" stylesheets="@css/Main.css" text="LOG IN" />
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/logInIcon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                     <opaqueInsets>
+                        <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="$model.logOutHandler" spacing="20.0" styleClass="topMenu-item" stylesheets="@css/Main.css">
+                     <children>
+                        <Label styleClass="topMenu-label" stylesheets="@css/Main.css" text="LOG OUT" />
+                        <ImageView pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/logOutIcon.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                     <opaqueInsets>
+                        <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                  </HBox>
+               </children>
             </HBox>
-        </VBox>
-    </top>
-    <center>
-        <VBox styleClass="centerBox">
-            <TextArea editable="false" text="${model.messages}" prefHeight="400"/>
-            <HBox styleClass="sendBox">
-                <TextField prefWidth="400" fx:id="txtMessageToSend" promptText="Messaggio da Inviare ..." text="$model.messageToSend" />
-                <Button text="INVIA" onAction="$model.sendMessageHandler" disable="${!model.userLogged}" />
+            <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#exit_click" styleClass="topMenu-item" stylesheets="@css/Main.css" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/closeIcon.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+               <opaqueInsets>
+                  <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+               </opaqueInsets>
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
             </HBox>
-        </VBox> 
-    </center>
-    <right>
-        <VBox styleClass="clientListBox">
-            <Label text="UTENTI CONNESSI" />
-            <ListView items="$model.clientsConnected" />
-        </VBox>        
-    </right>
+         </children>
+      </AnchorPane>
+   </top>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="1200.0" spacing="5.0" styleClass="bottom-bar" stylesheets="@css/Main.css" BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="bottom-label" stylesheets="@css/Main.css" text="Connected: " />
+            <ImageView fx:id="imageConnStatus" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/connFalseIcon.png" />
+               </image>
+            </ImageView>
+         </children>
+         <padding>
+            <Insets right="50.0" />
+         </padding>
+      </HBox>
+   </bottom>
 </BorderPane>

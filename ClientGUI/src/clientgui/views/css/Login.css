@@ -1,26 +1,22 @@
 
-.root{
-    -fx-alignment: center;
-    -fx-font-family: "Verdana";
-    -fx-background-color: #dedede;
-    -fx-padding: 10px;
-    -fx-spacing: 20;
+.logIn-btn{
+    -fx-background-color: #405361;
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-family: System;
+    -fx-font-weight: bold;    
 }
 
-.ip-portBox{
-    -fx-alignment: center;
-    -fx-border-color: black;
-    -fx-border-radius: 5.0;
-    -fx-border-width: 1px;
-    -fx-spacing: 60;
-    -fx-padding: 15px;
+.logIn-btn:hover{
+    -fx-cursor:hand;
+    -fx-background-color: #4A6070;
 }
 
-.usernameBox{
-    -fx-alignment: center;
-    -fx-border-color: black;
-    -fx-border-radius: 5.0;
-    -fx-border-width: 1px;
-    -fx-spacing: 10;
-    -fx-padding: 15px;
+.general-textField{
+    -fx-font-size: 20px;    
+}
+
+.error-label{
+    -fx-text-fill: red;
+    -fx-font-size: 12px;    
 }
