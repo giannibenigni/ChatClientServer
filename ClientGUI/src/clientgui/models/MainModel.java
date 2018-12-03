@@ -7,7 +7,6 @@ import clientgui.Writer;
 import clientgui.classes.ClientData;
 import clientgui.classes.ServerData;
 import clientgui.parser.JSONParser;
-import clientgui.views.LoginViewController;
 import java.util.concurrent.Semaphore;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -18,12 +17,9 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
 import org.json.JSONException;
 
 /**
@@ -40,7 +36,6 @@ public class MainModel {
     
     private String username = "";
     private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
-//    private final ObservableList<ClientData> clientsConnected = FXCollections.observableArrayList();
     
     private BufferedReader in = null;
     private PrintStream out = null;
@@ -185,8 +180,9 @@ public class MainModel {
      * e fa partire il thread per la scrittura dei messaggi del server
      * @param serverData ServerData serverData (ip, port)
      * @param username String username
+     * @return true se si è riuscito a connettere. altrimenti false
      */
-    public void connectToSocket(ServerData serverData, String username){
+    public boolean connectToSocket(ServerData serverData, String username){
         try{        
             socket = new Socket(InetAddress.getByName(serverData.getIp()),  serverData.getPort()); 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -196,7 +192,7 @@ public class MainModel {
             alert.setHeaderText("ERRORE CONNESSIONE AL SERVER");
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
-            return;
+            return false;
             
 //            System.exit(1);
         }
@@ -212,43 +208,11 @@ public class MainModel {
         this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem);         
         writerThread.start();
         setUserLogged(true);
+        
+        return true;
     }
     
-    // EVENTS -------------------------------------------------
-    
-    /**
-     * Apro la finestra di Login
-     */
-    public EventHandler<MouseEvent> logInHandler = e -> {
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientgui/views/LoginView.fxml"));                    
-            Stage stage = new Stage();            
-            
-            //TODO cercare un modo per fare apparire la finestra di login sopra a tutto però senza compromettere la alertBox di errore della connessione al server
-//            stage.setAlwaysOnTop(true);
-//            stage.initModality(Modality.APPLICATION_MODAL);            
-            
-            stage.setScene(new Scene(loader.load()));
-            stage.setResizable(false);
-            
-            LoginViewController controller = loader.<LoginViewController>getController();
-            
-            controller.setMainModel(this);
-            
-            stage.showAndWait();
-                
-        }catch(IOException ex){
-            System.err.println(ex.getMessage());
-        }
-    };  
-    
-    /**
-     * LogIn Handler Getter
-     * @return EventHandler
-     */
-    public EventHandler<MouseEvent> getLogInHandler(){
-        return this.logInHandler;
-    }
+    // EVENTS -------------------------------------------------    
     
     /**
      * LOG OUT Handler

@@ -9,10 +9,6 @@ import clientgui.models.MainModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.beans.value.ChangeListener;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -49,9 +44,9 @@ public class MainViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         Parent ui = null;
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GlobalChatView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/clientgui/views/LoginView.fxml"));
             ui = (Parent)fxmlLoader.load();
-            fxmlLoader.<GlobalChatViewController>getController().setModel(model);
+            fxmlLoader.<LoginViewController>getController().setMainModel(model);
         }catch(IOException ex){
             System.err.println(ex.getMessage());
         }
@@ -64,6 +59,10 @@ public class MainViewController implements Initializable {
         });
     }
 
+    public BorderPane getBorderPane(){
+        return borderPane;
+    }
+    
     @FXML
     private void open_sidebar(MouseEvent event) {        
         try {
@@ -86,7 +85,21 @@ public class MainViewController implements Initializable {
 
     @FXML
     private void exit_click(MouseEvent event) {
-        model.logOutHandler.handle(null);
+        model.logOutHandler.handle(event);
         ((Stage)borderPane.getScene().getWindow()).close();
+    }
+    
+    @FXML 
+    private void logIn_click(MouseEvent event){        
+        Parent ui = null;
+        try{            
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/clientgui/views/LoginView.fxml"));      
+            ui = (Parent)loader.load();
+            loader.<LoginViewController>getController().setMainModel(model);                
+        }catch(IOException ex){
+            System.err.println(ex.getMessage());
+        }
+        borderPane.setCenter(ui);
+        borderPane.requestFocus();
     }
 }

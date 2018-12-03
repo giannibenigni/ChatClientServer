@@ -38,12 +38,11 @@ public class GlobalChatViewController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {  
-        for(Node text: emojiList.getChildren()){
+        emojiList.getChildren().forEach((text) -> {
             text.setOnMouseClicked(event -> {
                 textField.setText(textField.getText()+" "+((Text)text).getText());
-//                emojiList.setVisible(false);
             });
-        }
+        });
     }
     
     public void setModel(MainModel model){

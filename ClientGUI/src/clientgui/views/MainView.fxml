@@ -34,7 +34,7 @@
             </HBox>
             <HBox alignment="CENTER" layoutX="876.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="140.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <HBox onMouseClicked="$model.logInHandler" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="20.0" styleClass="topMenu-item" stylesheets="@css/Main.css">
+                  <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#logIn_click" spacing="20.0" styleClass="topMenu-item" stylesheets="@css/Main.css">
                      <children>
                         <Label styleClass="topMenu-label" stylesheets="@css/Main.css" text="LOG IN" />
                         <ImageView pickOnBounds="true" preserveRatio="true">
@@ -50,7 +50,7 @@
                         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                      </padding>
                   </HBox>
-                  <HBox onMouseClicked="$model.logOutHandler" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="20.0" styleClass="topMenu-item" stylesheets="@css/Main.css">
+                  <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="$model.logOutHandler" spacing="20.0" styleClass="topMenu-item" stylesheets="@css/Main.css">
                      <children>
                         <Label styleClass="topMenu-label" stylesheets="@css/Main.css" text="LOG OUT" />
                         <ImageView pickOnBounds="true" preserveRatio="true">

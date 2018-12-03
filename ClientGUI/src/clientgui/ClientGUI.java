@@ -1,12 +1,14 @@
 
 package clientgui;
 
+import clientgui.views.MainViewController;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -21,25 +23,28 @@ public class ClientGUI extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("views/MainView.fxml"));
+        Parent root = null;
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("views/MainView.fxml"));
+        root = (Parent)loader.load();
+        BorderPane borderPane = loader.<MainViewController>getController().getBorderPane();
         Scene scene = new Scene(root);
         
-        root.setOnMousePressed((MouseEvent event) -> {
+        borderPane.getTop().setOnMousePressed((MouseEvent event) -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
         
-        root.setOnMouseDragged((MouseEvent event) -> {
+        borderPane.getTop().setOnMouseDragged((MouseEvent event) -> {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
             stage.setOpacity(0.7f);
         });
         
-        root.setOnDragDone((e) -> {
+        borderPane.getTop().setOnDragDone((e) -> {
             stage.setOpacity(1.0f);
         });
         
-        root.setOnMouseReleased((e) -> {
+        borderPane.getTop().setOnMouseReleased((e) -> {
             stage.setOpacity(1.0f);
         });
         
