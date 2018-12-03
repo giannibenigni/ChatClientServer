@@ -92,7 +92,6 @@ public class LoginModel {
             borderPaneMain.setCenter(ui);
             borderPaneMain.requestFocus();
         }
-        ((Node) e.getSource()).getScene().getRoot().requestFocus();
     };
 
     /**
