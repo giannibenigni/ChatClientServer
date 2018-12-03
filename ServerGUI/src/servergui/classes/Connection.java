@@ -1,19 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package servergui.classes;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import org.json.*;
@@ -22,37 +16,30 @@ import org.json.*;
  *
  * @author gianni.benigni
  */
-public class Connection extends Thread{
-    
-    
+public class Connection extends Thread{        
     private Socket Client = null;
-    private BufferedReader In = null;
-    private PrintStream Out = null;
+    private BufferedReader in = null;
+    private PrintStream out = null;
     
     private Semaphore outSem = null;
     private Semaphore listSem = null;
+    private Semaphore messagesSem = null;        
     
-    private String ClientName = "";
-    
-    private ObservableList<Connection> OpenConnection;
-    
+    private ObservableList<Connection> OpenConnection;    
     private StringProperty outputString;
     
     private ClientData clientData = new ClientData();
-    private ClientData clientsData = new ClientData();
-
     
-    public Connection(Socket client, ObservableList<Connection> array, StringProperty outputS, BufferedReader in, PrintStream out, Semaphore list){
-        
-        
+    public Connection(Socket client, ObservableList<Connection> array, StringProperty outputS, Semaphore listSem, Semaphore msgSem){                
         this.Client = client;
         this.OpenConnection = array;
         outputString = outputS;
-        listSem = list;
+        this.listSem = listSem;
+        this.messagesSem = msgSem;
         
         try {
-            In = in;
-            Out = out;
+            in = new BufferedReader(new InputStreamReader(Client.getInputStream()));
+            out = new PrintStream(Client.getOutputStream(), true);
         } catch (Exception e) {
             
             try {
@@ -66,28 +53,22 @@ public class Connection extends Thread{
         
         this.start();
     }
-    
-    
-    public void writeMessage(String message) throws InterruptedException{
         
+    public void writeMessage(String message) throws InterruptedException{        
         outSem.acquire();
-        Out.println(message);
-        outSem.release();
-        
-    }
-    
+        out.println(message);
+        outSem.release();        
+    }    
     
     @Override
-    public void run(){
-        
-        try {
-            
+    public void run(){        
+        try {            
             //Legge i dati di login
-            JSONObject logIn = new JSONObject(In.readLine());
+            JSONObject logIn = new JSONObject(in.readLine());
             clientData.setUsername(logIn.getJSONObject("newUserData").getString("username"));
             clientData.setIp(Client.getInetAddress().toString());
             logIn.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());            
-                     
+            
             // mi creo un array con i dati di tutti i client connessi eccetto me stesso
             ArrayList<ClientData> clientsData = new ArrayList<>();
             listSem.acquire();                
@@ -109,9 +90,12 @@ public class Connection extends Thread{
             }
             listSem.release();
             
-            while(true){
-                
-                JSONObject json = new JSONObject(In.readLine());
+            messagesSem.acquire();
+            outputString.set(outputString.get()+"\nBENVENUTO "+clientData.getUsername()+"["+clientData.getIp()+"]"); 
+            messagesSem.release();
+            
+            while(true){                
+                JSONObject json = new JSONObject(in.readLine());
                 
                 if(json.getInt("messageType") == 2){
                     disconnect(json);
@@ -121,55 +105,56 @@ public class Connection extends Thread{
                 json.getJSONObject("from").put("ip", clientData.getIp());
                 
                 listSem.acquire();
-                
-                for(Connection connect: OpenConnection){
+                for(Connection connect: OpenConnection){                    
                     connect.writeMessage(json.toString());
                 }
-                listSem.release();
-                                        
-            }
-            
-            
+                listSem.release();     
+                
+                messagesSem.acquire();
+                outputString.set(outputString.get()+"\n<"+clientData.getUsername()+"["+clientData.getIp()+"]> "+json.getString("messageText")); 
+                messagesSem.release();
+            }                        
         } catch (Exception ex) {
            System.err.println(ex);
-        }
-        
+        }        
     }
     
-    public void disconnect(JSONObject json){
-        
-        
+    /**
+     * Metodo per la disconnessione del client
+     * @param json JSONObject che contiene le informazioni del logout
+     */
+    public void disconnect(JSONObject json){                
         try {
             json.getJSONObject("userData").put("ip",clientData.getIp());
             listSem.acquire();
             for(Connection connect: OpenConnection){
-                    connect.writeMessage(json.toString());
-                }
-                OpenConnection.remove(this);
-                listSem.release();
-                System.out.println("-- "+clientData.getUsername() + " ha ABBANDONATO la chat.");
+                connect.writeMessage(json.toString());
+            }
+                
+            Platform.runLater(() -> { 
+                OpenConnection.remove(this); 
+            });
+            listSem.release();
+            
+            messagesSem.acquire();
+            outputString.set(outputString.get()+"\n<"+clientData.getUsername()+"["+clientData.getIp()+"]> HA ABBANDONATO LA CHAT!"); 
+            messagesSem.release();
 
-                Out.flush();
-                Out.close();
-                In.close();
-                Client.close();  
+            out.flush();
+            out.close();
+            in.close();
+            Client.close();  
         } catch (Exception ex) {
             System.err.println(ex);
-        }
-        
-        
+        }               
     }
-    
-    
+        
     /**
-     * Metodo che serve per stampare la lista dei client
-     * @return 
+     * Metodo ToString 
+     * @return String
      */
     @Override
     public String toString(){
-        return "Username: " + ClientName + "\nIP: " + Client.getInetAddress();
-    }
-    
-    
-    
+        return "Username: " + clientData.getUsername() + "\nIP: " + clientData.getIp();
+    }    
 }

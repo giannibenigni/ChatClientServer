@@ -17,7 +17,6 @@ import org.json.JSONObject;
 public class JSONParser {
     
     public static JSONObject getClientListJSON(ArrayList<ClientData> list) throws JSONException{
-        
         JSONObject root = new JSONObject();
         root.put("messageType", 3);
         
@@ -33,4 +32,17 @@ public class JSONParser {
         return root;
     }
     
+    public static JSONObject getServerNormalMessageJSON(String msg) throws JSONException{
+        JSONObject root = new JSONObject();
+        root.put("messageType", 0);        
+        root.put("messageText", msg);
+        
+        JSONObject from = new JSONObject();
+        from.put("username", "Server");
+        from.put("ip", "");
+        
+        root.put("from", from);
+        
+        return root;
+    }  
 }

@@ -25,9 +25,7 @@ public class MainViewController implements Initializable {
     
     @FXML
     private MainModel model;
-    
-    
-    
+            
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         model.messageToSendProperty().bindBidirectional(txtMessageToSend.textProperty());
