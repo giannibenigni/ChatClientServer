@@ -71,7 +71,7 @@ public class MainModel extends Thread{
                 
                 listSem.acquire();
                 
-                OpenConnection.add(new Connection(Client,OpenConnection,messages,In,Out));
+                OpenConnection.add(new Connection(Client,OpenConnection,messages,In,Out,listSem));
                 
                 listSem.release();
                 

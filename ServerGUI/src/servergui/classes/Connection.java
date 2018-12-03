@@ -30,20 +30,25 @@ public class Connection extends Thread{
     private PrintStream Out = null;
     
     private Semaphore outSem = null;
+    private Semaphore listSem = null;
     
     private String ClientName = "";
     
     private ObservableList<Connection> OpenConnection;
     
     private StringProperty outputString;
+    
+    private ClientData clientData = new ClientData();
+    private ClientData clientsData = new ClientData();
 
     
-    public Connection(Socket client, ObservableList<Connection> array, StringProperty outputS, BufferedReader in, PrintStream out){
+    public Connection(Socket client, ObservableList<Connection> array, StringProperty outputS, BufferedReader in, PrintStream out, Semaphore list){
         
         
         this.Client = client;
         this.OpenConnection = array;
         outputString = outputS;
+        listSem = list;
         
         try {
             In = in;
@@ -79,51 +84,79 @@ public class Connection extends Thread{
             
             //Legge i dati di login
             JSONObject logIn = new JSONObject(In.readLine());
-            ClientName = logIn.getJSONObject("newUserData").getString("username");
-            logIn.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());
-            
-            //ClientName = In.readLine();
-            
-            outputString.set(outputString.get() + "\n" + "<Server> BENVENUTO/A " + ClientName);
-            
-            
-            for(Connection connection : OpenConnection ){
-                
-                connection.writeMessage("<Server> BENVENUTO/A " + ClientName);
+            clientData.setUsername(logIn.getJSONObject("newUserData").getString("username"));
+            clientData.setIp(Client.getInetAddress().toString());
+            logIn.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());            
+                     
+            // mi creo un array con i dati di tutti i client connessi eccetto me stesso
+            ArrayList<ClientData> clientsData = new ArrayList<>();
+            listSem.acquire();                
+            for (Connection connection: OpenConnection) {
+                if(connection != this)
+                    clientsData.add(connection.clientData);
             }
-                        
+            listSem.release();
+            
+            //Invio ai client la lista dei client connessi
+            writeMessage(JSONParser.getClientListJSON(clientsData).toString());
+            
+            //Trasmetto il login a tutti i client eccetto questo
+            listSem.acquire();
+            for(Connection connect : OpenConnection){
+                if(connect != this){
+                    connect.writeMessage(logIn.toString());
+                }
+            }
+            listSem.release();
             
             while(true){
                 
-                String msg = In.readLine();
-                if(msg.equalsIgnoreCase("/exit")){
-                    for(Connection connection: OpenConnection){
-                        connection.writeMessage("<Server> "  + ClientName + " ha ABBANDONATO la chat");
-                    }
-                    outputString.set(outputString.get() + "\n" + "<Server> " + ClientName + " ha ABBANDONATO la chat");
-                    
-                    OpenConnection.remove(this);
-                    Out.flush();
-                    Out.close();
-                    In.close();
-                    Client.close();
+                JSONObject json = new JSONObject(In.readLine());
+                
+                if(json.getInt("messageType") == 2){
+                    disconnect(json);
                     return;
-                }else{
-                    outputString.set(outputString.get() + "\n<" + ClientName + "> " + msg);
-
-                    for(Connection connection: OpenConnection){
-                        connection.writeMessage("<" + ClientName + "> " + msg);
-                    }
                 }
                 
+                json.getJSONObject("from").put("ip", clientData.getIp());
                 
+                listSem.acquire();
                 
+                for(Connection connect: OpenConnection){
+                    connect.writeMessage(json.toString());
+                }
+                listSem.release();
+                                        
             }
             
             
         } catch (Exception ex) {
            System.err.println(ex);
         }
+        
+    }
+    
+    public void disconnect(JSONObject json){
+        
+        
+        try {
+            json.getJSONObject("userData").put("ip",clientData.getIp());
+            listSem.acquire();
+            for(Connection connect: OpenConnection){
+                    connect.writeMessage(json.toString());
+                }
+                OpenConnection.remove(this);
+                listSem.release();
+                System.out.println("-- "+clientData.getUsername() + " ha ABBANDONATO la chat.");
+
+                Out.flush();
+                Out.close();
+                In.close();
+                Client.close();  
+        } catch (Exception ex) {
+            System.err.println(ex);
+        }
+        
         
     }
     

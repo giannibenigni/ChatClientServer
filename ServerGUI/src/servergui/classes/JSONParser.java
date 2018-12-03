@@ -1,0 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package servergui.classes;
+
+import java.util.ArrayList;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+/**
+ *
+ * @author Gianni
+ */
+public class JSONParser {
+    
+    public static JSONObject getClientListJSON(ArrayList<ClientData> list) throws JSONException{
+        
+        JSONObject root = new JSONObject();
+        root.put("messageType", 3);
+        
+        JSONArray clients = new JSONArray();
+        for(ClientData client : list){
+            JSONObject elem = new JSONObject();
+            elem.put("username", client.getUsername());
+            elem.put("ip", client.getIp());
+            clients.put(elem);
+        }
+        
+        root.put("users", clients);
+        return root;
+    }
+    
+}
