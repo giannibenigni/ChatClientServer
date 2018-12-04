@@ -1,0 +1,22 @@
+
+.logIn-btn{
+    -fx-background-color: #405361;
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-family: System;
+    -fx-font-weight: bold;    
+}
+
+.logIn-btn:hover{
+    -fx-cursor:hand;
+    -fx-background-color: #4A6070;
+}
+
+.general-textField{
+    -fx-font-size: 20px;    
+}
+
+.error-label{
+    -fx-text-fill: red;
+    -fx-font-size: 12px;    
+}

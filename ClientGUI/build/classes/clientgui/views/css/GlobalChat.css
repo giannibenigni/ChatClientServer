@@ -1,0 +1,37 @@
+
+.title{
+    -fx-font-size: 26px;
+    -fx-font-family: Calibri;
+    -fx-font-weight: bold;
+}
+
+.textfield{
+    -fx-background-color: black, whitesmoke;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-background-radius: 0;
+    -fx-focus-color: transparent;
+    -fx-font-size: 20px;
+}
+
+.send-btn:hover{
+    -fx-cursor: hand;    
+}
+
+.textArea{
+    -fx-focus-color: whitesmoke;    
+    -fx-faint-focus-color: whitesmoke;
+    -fx-border-color: whitesmoke;
+}
+
+#emojiList{
+    -fx-padding: 10px;
+    -fx-background-color: gray;
+    -fx-background-radius: 30;
+    -fx-font-size: 22px;
+    -fx-text-fill: chocolate;
+    -fx-background-color: rgba(255,255,255,0.7);
+}
+
+.emoji-btn:hover{
+    -fx-cursor: hand;
+}
