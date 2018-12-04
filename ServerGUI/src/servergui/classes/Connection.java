@@ -55,15 +55,16 @@ public class Connection extends Thread{
     }
         
     public void writeMessage(String message) throws InterruptedException{        
-        outSem.acquire();
-        out.println(message);
-        outSem.release();        
+            outSem.acquire();
+            out.println(message);
+            outSem.release();
     }    
     
     @Override
     public void run(){        
         try {            
-            //Legge i dati di login
+            
+//Legge i dati di login
             JSONObject logIn = new JSONObject(in.readLine());
             clientData.setUsername(logIn.getJSONObject("newUserData").getString("username"));
             clientData.setIp(Client.getInetAddress().toString());
@@ -71,6 +72,7 @@ public class Connection extends Thread{
             
             // mi creo un array con i dati di tutti i client connessi eccetto me stesso
             ArrayList<ClientData> clientsData = new ArrayList<>();
+            
             listSem.acquire();                
             for (Connection connection: OpenConnection) {
                 if(connection != this)
@@ -91,28 +93,32 @@ public class Connection extends Thread{
             listSem.release();
             
             messagesSem.acquire();
-            outputString.set(outputString.get()+"\nBENVENUTO "+clientData.getUsername()+"["+clientData.getIp()+"]"); 
+            
+            outputString.set(outputString.get()+"\nBENVENUTO "+clientData.getUsername()+"["+clientData.getIp()+"]");
+            
             messagesSem.release();
             
-            while(true){                
-                JSONObject json = new JSONObject(in.readLine());
+            while(true){
                 
+                JSONObject json = new JSONObject(in.readLine());
+
                 if(json.getInt("messageType") == 2){
                     disconnect(json);
                     return;
                 }
-                
+
                 json.getJSONObject("from").put("ip", clientData.getIp());
-                
+
                 listSem.acquire();
                 for(Connection connect: OpenConnection){                    
                     connect.writeMessage(json.toString());
                 }
                 listSem.release();     
-                
+
                 messagesSem.acquire();
                 outputString.set(outputString.get()+"\n<"+clientData.getUsername()+"["+clientData.getIp()+"]> "+json.getString("messageText")); 
                 messagesSem.release();
+                
             }                        
         } catch (Exception ex) {
            System.err.println(ex);

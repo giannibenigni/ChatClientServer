@@ -20,7 +20,7 @@
     <center>
         <HBox>
             <VBox styleClass = "centerBox">
-                <TextArea editable = "false" prefWidth = "400" prefHeight = "400" text="${model.messages}"/>
+                <TextArea editable = "false" prefWidth = "400" prefHeight = "400" text="${model.messages}" fx:id = "txtShowMessages"/>
                 <HBox styleClass = "sendBox">
                     <TextField prefWidth = "400" fx:id="txtMessageToSend" promptText = "Messaggio da inviare..." text="$model.messageToSend"/>
                     <Button text = "INVIA" prefWidth = "100" onAction = "$model.sendMessageHandler"/>

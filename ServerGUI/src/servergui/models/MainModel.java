@@ -142,11 +142,18 @@ public class MainModel extends Thread{
     public EventHandler<ActionEvent> sendMessageHandler = e -> {                
         try{
             listSem.acquire();
-            for(Connection connection: openConnection){
-                connection.writeMessage(JSONParser.getServerNormalMessageJSON(getMesssageToSend()).toString());
-            }            
-            listSem.release();        
-            messages.set(messages.get() + "\n<Server> " + getMesssageToSend());
+            
+            String message = getMesssageToSend();
+            String messageWithoutSpace = message.replace(" ", "");
+            
+            if(message != null && !message.isEmpty() && !messageWithoutSpace.equals("")){           
+                
+                for(Connection connection: openConnection){
+                    connection.writeMessage(JSONParser.getServerNormalMessageJSON(message).toString());
+                }                    
+                messages.set(messages.get() + "\n<Server> " + message);
+            }
+            listSem.release();
         }catch(InterruptedException | JSONException ex){
             System.err.println(ex.getMessage());
         }
