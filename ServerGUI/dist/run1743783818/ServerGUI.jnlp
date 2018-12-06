@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="ServerGUI.jnlp">
+  <information>
+    <title>ServerGUI</title>
+    <vendor>Gianni</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="ServerGUI.jar" size="13129" download="eager" />
+    <jar href="lib\org.json.jar" size="48796" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="ServerGUI" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="servergui.ServerGUI"  name="ServerGUI" />
+  <update check="always"/>
+</jnlp>

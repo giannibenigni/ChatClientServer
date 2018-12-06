@@ -52,7 +52,7 @@ public class MainViewController implements Initializable {
             ui = (Parent)fxmlLoader.load();
             fxmlLoader.<LoginViewController>getController().setMainModel(model);
         }catch(IOException ex){
-            System.err.println(ex.getMessage());
+            System.err.println(ex);
         }
         borderPane.setCenter(ui);
         

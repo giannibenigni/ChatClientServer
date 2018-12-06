@@ -21,6 +21,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -32,7 +33,7 @@ public class MainModel {
     private final BooleanProperty userLogged;
     private final  StringProperty messages;
     private final StringProperty messageToSend;
-    private final BooleanProperty showIp;
+    private final BooleanProperty showIp;    
     
     private String username = "";
     private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
@@ -180,9 +181,10 @@ public class MainModel {
      * e fa partire il thread per la scrittura dei messaggi del server
      * @param serverData ServerData serverData (ip, port)
      * @param username String username
+     * @param password String password
      * @return true se si è riuscito a connettere. altrimenti false
      */
-    public boolean connectToSocket(ServerData serverData, String username){
+    public boolean connectToSocket(ServerData serverData, String username, String password){
         try{        
             socket = new Socket(InetAddress.getByName(serverData.getIp()),  serverData.getPort()); 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -193,13 +195,22 @@ public class MainModel {
             alert.setContentText(ex.getMessage());
             alert.showAndWait();
             return false;
-            
-//            System.exit(1);
         }
         
         try {
-            out.println(JSONParser.getLogInJSON(username).toString());
-        } catch (JSONException ex) {
+            out.println(JSONParser.getLogInJSON(username, password).toString());
+            
+            JSONObject jsonLogInResult = new JSONObject(in.readLine());
+            boolean result = jsonLogInResult.getBoolean("result");
+            
+            if(!result){
+                Alert alert = new Alert(Alert.AlertType.ERROR, "USERNAME / PASSWORD ERRATI", ButtonType.OK);            
+                alert.setHeaderText("USERNAME / PASSWORD ERRATI");
+                alert.setContentText("USERNAME / PASSWORD ERRATI");
+                alert.showAndWait();
+                return false;
+            }
+        } catch (JSONException | IOException ex) {
             System.err.println(ex);
         }
         

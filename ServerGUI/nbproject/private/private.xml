@@ -3,10 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Mariaelda/Downloads/ChatClientServer-master/ServerGUI/src/servergui/models/MainModel.java</file>
-            <file>file:/C:/Users/Mariaelda/Downloads/ChatClientServer-master/ServerGUI/src/servergui/views/MainViewController.java</file>
-            <file>file:/C:/Users/Mariaelda/Downloads/ChatClientServer-master/ServerGUI/src/servergui/views/MainView.fxml</file>
-            <file>file:/C:/Users/Mariaelda/Downloads/ChatClientServer-master/ServerGUI/src/servergui/classes/Connection.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ServerGUI/src/servergui/classes/Connection.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ServerGUI/src/servergui/classes/ClientData.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ServerGUI/src/servergui/users.xml</file>
         </group>
     </open-files>
 </project-private>

@@ -2,6 +2,8 @@
 package servergui.classes;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -10,7 +12,15 @@ import java.util.concurrent.Semaphore;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.json.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -55,23 +65,84 @@ public class Connection extends Thread{
     }
         
     public void writeMessage(String message) throws InterruptedException{        
-            outSem.acquire();
-            out.println(message);
-            outSem.release();
+        outSem.acquire();
+        out.println(message);
+        outSem.release();
     }    
+     
+    /**
+     * metodo che fa il login del Client
+     * @param logInData JSONObject log in data
+     * @return Boolean true se il logIn va a bun fine
+     */
+    private boolean logIn(JSONObject logInData){
+        try{                        
+            clientData.setUsername(logInData.getJSONObject("newUserData").getString("username"));
+            clientData.setPassword(logInData.getJSONObject("newUserData").getString("password")); 
+            
+            clientData.setIp(Client.getInetAddress().toString());
+            logInData.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());              
+            
+            return checkUser(clientData.getUsername(), clientData.getPassword());            
+        }catch(JSONException ex){
+            System.err.println(ex.getMessage());            
+        }
+        return false;
+    }        
+    
+    /**
+     * Metodo che controlla i dati del client 
+     * @param username String username
+     * @param password String password
+     * @return Boolean dati corretti
+     */
+    private boolean checkUser(String username, String password){  
+        try{
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File("src/servergui/users.xml"));
+            
+            doc.getDocumentElement().normalize();
+            NodeList users = doc.getElementsByTagName("user");
+            
+            int i = 0;
+            while(i<users.getLength()){
+                Element user = (Element)users.item(i);
+                String name = user.getElementsByTagName("username").item(0).getTextContent();
+                String psw = user.getElementsByTagName("password").item(0).getTextContent();
+                
+                if(name.equals(username)){
+                    return psw.equals(password);
+                }
+                
+                i++;
+            }            
+        }catch(IOException | ParserConfigurationException | SAXException ex){
+            System.err.println(ex.getMessage());            
+        }
+        return false;
+    }
     
     @Override
     public void run(){        
-        try {                        
-            //Legge i dati di login
+        try {       
             JSONObject logIn = new JSONObject(in.readLine());
-            clientData.setUsername(logIn.getJSONObject("newUserData").getString("username"));
-            clientData.setIp(Client.getInetAddress().toString());
-            logIn.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());            
+            boolean logInResult = logIn(logIn);
+            
+            // trasmetto al client il risultato del logIn
+            writeMessage(JSONParser.getLogInResult(logInResult).toString());           
+            
+            if(!logInResult){
+                listSem.acquire();
+                Platform.runLater(() -> { 
+                    OpenConnection.remove(this); 
+                });
+                listSem.release();
+                return;
+            }
             
             // mi creo un array con i dati di tutti i client connessi eccetto me stesso
-            ArrayList<ClientData> clientsData = new ArrayList<>();
-            
+            ArrayList<ClientData> clientsData = new ArrayList<>();            
             listSem.acquire();                
             for (Connection connection: OpenConnection) {
                 if(connection != this)

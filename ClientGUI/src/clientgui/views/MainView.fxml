@@ -11,7 +11,7 @@
 
 <?import clientgui.models.MainModel?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController">
     <fx:define>
         <MainModel fx:id="model" />
     </fx:define>
@@ -91,7 +91,7 @@
       </AnchorPane>
    </top>
    <bottom>
-      <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="1200.0" spacing="5.0" styleClass="bottom-bar" stylesheets="@css/Main.css" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="1250.0" spacing="5.0" styleClass="bottom-bar" stylesheets="@css/Main.css" BorderPane.alignment="CENTER">
          <children>
             <Label styleClass="bottom-label" stylesheets="@css/Main.css" text="Show ip: " />
             <CheckBox fx:id="showIpCheck" />

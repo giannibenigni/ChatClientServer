@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package servergui.classes;
 
 import java.util.ArrayList;
@@ -45,4 +41,12 @@ public class JSONParser {
         
         return root;
     }  
+    
+    public static JSONObject getLogInResult(boolean result) throws JSONException{
+        JSONObject root = new JSONObject();
+        root.put("messageType", 4);
+        root.put("result", result);
+        
+        return root;
+    }
 }

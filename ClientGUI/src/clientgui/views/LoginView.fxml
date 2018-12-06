@@ -28,7 +28,7 @@
       <VBox alignment="CENTER" spacing="30.0">
          <children>
             <JFXTextField fx:id="txtUsername" focusColor="#405361" labelFloat="true" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="300.0" promptText="UserName" styleClass="general-textField" stylesheets="@css/Login.css" />
-            <JFXPasswordField labelFloat="true" maxWidth="-Infinity" prefWidth="300.0" promptText="Password" styleClass="general-textField" stylesheets="@css/Login.css">
+            <JFXPasswordField fx:id="txtPassword" labelFloat="true" maxWidth="-Infinity" prefWidth="300.0" promptText="Password" styleClass="general-textField" stylesheets="@css/Login.css">
                <VBox.margin>
                   <Insets top="15.0" />
                </VBox.margin>

@@ -6,7 +6,6 @@ import clientgui.views.GlobalChatViewController;
 import java.io.IOException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -21,6 +20,7 @@ import javafx.scene.layout.BorderPane;
 public class LoginModel {
     private ServerData serverData;
     private StringProperty username;
+    private StringProperty password;
     
     private MainModel mainModel;
     
@@ -30,6 +30,7 @@ public class LoginModel {
     public LoginModel(){
         this.serverData = new ServerData("127.0.0.1", 4000);
         this.username = new SimpleStringProperty(""); 
+        this.password = new SimpleStringProperty("");
     }
     
     /**
@@ -65,6 +66,30 @@ public class LoginModel {
     }
     
     /**
+     * Password Getter
+     * @return String Password
+     */
+    public String getPassword(){
+        return this.password.get();
+    }
+    
+    /**
+     * Password Setter 
+     * @param value String value
+     */
+    public void setPassword(String value){
+        this.password.set(value);
+    }
+    
+    /**
+     * Password Property Getter
+     * @return StringProperty Password
+     */
+    public StringProperty passwordProperty(){
+        return password;
+    }
+    
+    /**
      * MainModel Setter
      * @param mainModel MainModel 
      */
@@ -78,7 +103,7 @@ public class LoginModel {
      */
     private EventHandler<MouseEvent> logInHandler = e -> {        
         // controllo se la connessione è andata a buon fine.
-        if(mainModel.connectToSocket(serverData, username.get())){ 
+        if(mainModel.connectToSocket(serverData, username.get(), password.get())){ 
             // se si è connesso tolgo la finestra di login e metto la chat
             BorderPane borderPaneMain = (BorderPane) ((Node) e.getSource()).getScene().getRoot();
             Parent ui = null;

@@ -22,12 +22,13 @@ public class JSONParser {
         return root;
     }
     
-    public static JSONObject getLogInJSON(String username) throws JSONException{
+    public static JSONObject getLogInJSON(String username, String password) throws JSONException{
         JSONObject root = new JSONObject();
         root.put("messageType", 1);        
         
         JSONObject userData = new JSONObject();
         userData.put("username", username);
+        userData.put("password", password);
         // non setto l'ip perchè verra inserito dal server
         
         root.put("newUserData", userData);
