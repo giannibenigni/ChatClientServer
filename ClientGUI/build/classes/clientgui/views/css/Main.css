@@ -1,0 +1,62 @@
+
+.topMenu{
+    -fx-background-color: rgb(58,69,88);
+}
+
+.topMenu-item:hover{
+    -fx-cursor: hand;
+    -fx-background-color: #405361;
+}
+
+.topMenu-item:pressed{
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+    -fx-text-fill: #0099ff;
+}
+
+.topMenu-label{
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-family: System;
+    -fx-font-weight: bold;
+}
+
+.leftMenu{
+    -fx-background-color: #586988;
+}
+
+.leftMenu-item:hover{
+    -fx-cursor: hand;
+    -fx-background-color: #405361;
+    -fx-border-color: rgb(22,169,250);
+    -fx-border-width: 0px 0px 0px 3px;
+}
+
+.leftMenu-item:pressed{
+    -fx-background-color: transparent;
+    -fx-background-radius: 0px;
+    -fx-text-fill: #0099ff;
+}
+
+.leftMenuTitle-label{
+    -fx-text-fill: white;
+    -fx-font-size: 32px;
+    -fx-font-family: System;
+    -fx-font-weight: bold;
+}
+
+.leftMenuItem-label{
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-family: System;    
+}
+
+.bottom-bar{
+    -fx-background-color: rgb(58,69,88);
+}
+
+.bottom-label{
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-family: System;  
+}

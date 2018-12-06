@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import clientgui.models.LoginModel ?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" spacing="30.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.LoginViewController">
+    <fx:define>
+        <LoginModel fx:id="model" />
+    </fx:define>
+    <children>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+         <children>
+            <JFXTextField fx:id="txtIp" focusColor="#405361" labelFloat="true" promptText="Server IP" styleClass="general-textField" stylesheets="@css/Login.css" />
+            <JFXTextField fx:id="txtPort" focusColor="#405361" labelFloat="true" promptText="Server Port" styleClass="general-textField" stylesheets="@css/Login.css" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </HBox>
+      <Separator maxWidth="-Infinity" prefWidth="750.0" />
+      <VBox alignment="CENTER" spacing="30.0">
+         <children>
+            <JFXTextField fx:id="txtUsername" focusColor="#405361" labelFloat="true" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="300.0" promptText="UserName" styleClass="general-textField" stylesheets="@css/Login.css" />
+            <JFXPasswordField labelFloat="true" maxWidth="-Infinity" prefWidth="300.0" promptText="Password" styleClass="general-textField" stylesheets="@css/Login.css">
+               <VBox.margin>
+                  <Insets top="15.0" />
+               </VBox.margin>
+            </JFXPasswordField>
+            <JFXButton fx:id="btnLogIn" maxWidth="-Infinity" minWidth="-Infinity" onMouseClicked="$model.logInHandler" prefHeight="60.0" prefWidth="200.0" styleClass="logIn-btn" stylesheets="@css/Login.css" text="LOG IN">
+               <VBox.margin>
+                  <Insets top="30.0" />
+               </VBox.margin>
+            </JFXButton>
+         </children>
+         <VBox.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="30.0" />
+         </VBox.margin>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>

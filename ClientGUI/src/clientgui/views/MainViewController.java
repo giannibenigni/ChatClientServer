@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -36,6 +37,9 @@ public class MainViewController implements Initializable {
     
     @FXML
     private ImageView imageConnStatus;
+    
+    @FXML
+    private CheckBox showIpCheck;
 
     /**
      * Initializes the controller class.
@@ -57,6 +61,8 @@ public class MainViewController implements Initializable {
             String image = model.getUserLogged() ? "clientgui/views/images/connTrueIcon.png" :  "clientgui/views/images/connFalseIcon.png";
             imageConnStatus.setImage(new Image(image)); 
         });
+        
+        showIpCheck.selectedProperty().bindBidirectional(model.showIpProperty());
     }
 
     public BorderPane getBorderPane(){
