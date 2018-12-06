@@ -30,27 +30,17 @@ public class MainViewController implements Initializable {
     private TextField txtMessageToSend;
    
    @FXML
-   private TextArea txtShowMessages;
+   private TextArea txtMessages;
     
     @FXML
     private MainModel model;
             
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        model.messageToSendProperty().bindBidirectional(txtMessageToSend.textProperty());
+        model.messageToSendProperty().bindBidirectional(txtMessageToSend.textProperty());   
         
-        txtShowMessages.textProperty().addListener(new ChangeListener<Object>(){
-        
-            @Override
-            public void changed(ObservableValue<?> observable, Object oldValue, Object newValue){
-                //txtShowMessages.setCaretPosition(txtShowMessages.getDocument().getLenght());
-                //txtShowMessages.deselect();
-                //txtShowMessages.setScrollTop(Double.MIN_VALUE);
-                //DefaultCaret caret = (DefaultCaret) txtShowMessages.getC
-                //caret.setUpdatePolicy(ALWAYS_UPDATE);
-                System.out.println("ciao" + txtShowMessages.getLength());
-            }
-        
+        txtMessages.textProperty().addListener((String) -> {            
+            Platform.runLater(() -> txtMessages.positionCaret(txtMessages.getLength()));            
         });
     }    
     

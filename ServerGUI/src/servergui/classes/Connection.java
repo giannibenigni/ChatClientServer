@@ -62,9 +62,8 @@ public class Connection extends Thread{
     
     @Override
     public void run(){        
-        try {            
-            
-//Legge i dati di login
+        try {                        
+            //Legge i dati di login
             JSONObject logIn = new JSONObject(in.readLine());
             clientData.setUsername(logIn.getJSONObject("newUserData").getString("username"));
             clientData.setIp(Client.getInetAddress().toString());
@@ -98,8 +97,7 @@ public class Connection extends Thread{
             
             messagesSem.release();
             
-            while(true){
-                
+            while(true){                
                 JSONObject json = new JSONObject(in.readLine());
 
                 if(json.getInt("messageType") == 2){
@@ -117,8 +115,7 @@ public class Connection extends Thread{
 
                 messagesSem.acquire();
                 outputString.set(outputString.get()+"\n<"+clientData.getUsername()+"["+clientData.getIp()+"]> "+json.getString("messageText")); 
-                messagesSem.release();
-                
+                messagesSem.release();                
             }                        
         } catch (Exception ex) {
            System.err.println(ex);

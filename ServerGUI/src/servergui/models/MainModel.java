@@ -1,17 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package servergui.models;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -141,17 +133,15 @@ public class MainModel extends Thread{
      */
     public EventHandler<ActionEvent> sendMessageHandler = e -> {                
         try{
-            listSem.acquire();
+            listSem.acquire();           
             
-            String message = getMesssageToSend();
-            String messageWithoutSpace = message.replace(" ", "");
-            
-            if(message != null && !message.isEmpty() && !messageWithoutSpace.equals("")){           
-                
+            if(!getMesssageToSend().replace(" ", "").isEmpty()){                           
                 for(Connection connection: openConnection){
-                    connection.writeMessage(JSONParser.getServerNormalMessageJSON(message).toString());
-                }                    
-                messages.set(messages.get() + "\n<Server> " + message);
+                    connection.writeMessage(JSONParser.getServerNormalMessageJSON(getMesssageToSend()).toString());
+                }   
+                messagesSem.acquire();
+                messages.set(messages.get() + "\n<Server> " + getMesssageToSend());
+                messagesSem.release();
             }
             listSem.release();
         }catch(InterruptedException | JSONException ex){
@@ -166,7 +156,5 @@ public class MainModel extends Thread{
      */
     public EventHandler<ActionEvent> getSendMessageHandler(){
         return this.sendMessageHandler;
-    }
-    
-    
+    }    
 }

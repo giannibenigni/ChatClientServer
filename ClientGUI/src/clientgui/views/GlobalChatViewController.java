@@ -4,14 +4,11 @@ package clientgui.views;
 import clientgui.models.MainModel;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -57,7 +54,8 @@ public class GlobalChatViewController implements Initializable {
     
     @FXML
     private void sendMessage(MouseEvent event) {
-        model.sendMessageHandler.handle(event);
+        if(!textField.getText().replace(" ", "").isEmpty())
+            model.sendMessageHandler.handle(event);
     }
     
     @FXML
