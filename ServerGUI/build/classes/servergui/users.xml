@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
+    <user>
+        <username>Eugenio</username>
+        <password>1234</password>
+        <connected>false</connected>
+    </user>
+    <user>
+        <username>test</username>
+        <password>test</password>
+        <connected>false</connected>
+    </user>
+</users>
