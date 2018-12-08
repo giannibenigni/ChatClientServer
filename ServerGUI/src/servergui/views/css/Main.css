@@ -45,3 +45,10 @@
     
     -fx-padding: 15px;
 }
+
+.menuBar{
+    -fx-alignment: CENTER_LEFT;
+    -fx-border-radius: 5.0;
+    -fx-border-color: black;
+    -fx-background-color: null;
+}

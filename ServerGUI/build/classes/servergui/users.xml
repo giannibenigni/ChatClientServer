@@ -3,10 +3,14 @@
         <username>Eugenio</username>
         <password>1234</password>
         <connected>false</connected>
+        <kik>0</kik>
+        <banned>false</banned>
     </user>
     <user>
         <username>test</username>
         <password>test</password>
         <connected>false</connected>
+        <kik>0</kik>
+        <banned>false</banned>
     </user>
 </users>

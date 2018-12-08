@@ -16,7 +16,29 @@
     </fx:define>        
     <stylesheets>
         <URL value="@css/Main.css"/>
-    </stylesheets>    
+    </stylesheets>
+    
+    <top>
+        
+        <HBox>
+            <MenuBar fx:id="menuBar" styleClass = "menuBar">
+                <menus>
+                    <Menu text="File">
+                        <items>
+                           <MenuItem text="Add user account"/>
+                           <MenuItem text="Export user list"/>
+                           <SeparatorMenuItem  />
+                           <MenuItem text="Exit"/>
+                        </items>
+                </Menu>
+                </menus>             
+            </MenuBar>
+        </HBox>
+        
+    </top>
+        
+            
+                    
     <center>
         <HBox>
             <VBox styleClass = "centerBox">
@@ -27,8 +49,26 @@
                 </HBox>
             </VBox>
             <VBox styleClass = "clientListBox">
-                <Label text = "Utenti Online: "/>
-                <ListView prefHeight = "400" items="$model.openConnection"/>
+                <VBox>
+                    <Label text = "Utenti Online: "/>
+                    <ListView prefHeight = "400" items="$model.openConnection"/>
+                </VBox>
+                <VBox>
+                    
+                    <HBox styleClass = "clientListBox">
+                        
+                        <Button text="Kik" prefWidth = "100"/>
+                        <Label text = "Motivazione"/>
+                        <TextField prefWidth = "200" promptText = "Motivazione"/>
+                    </HBox>
+                    
+                    <HBox styleClass = "clientListBox">
+                        <Button text = "Ban" prefWidth = "100"/>
+                        <Label text = "Motivazione"/>
+                        <TextField prefWidth = "200" promptText = "Motivazione"/>
+                    </HBox>             
+                    
+                </VBox>               
             </VBox>
         </HBox>
     </center>    

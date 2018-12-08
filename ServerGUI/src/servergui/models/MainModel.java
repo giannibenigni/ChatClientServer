@@ -144,6 +144,7 @@ public class MainModel extends Thread{
                 messagesSem.release();
             }
             listSem.release();
+           
         }catch(InterruptedException | JSONException ex){
             System.err.println(ex.getMessage());
         }
