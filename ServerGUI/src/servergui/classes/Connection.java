@@ -126,12 +126,16 @@ public class Connection extends Thread{
                 String psw = user.getElementsByTagName("password").item(0).getTextContent();
                 
                 if(name.equals(username)){
-                    return psw.equals(password);
+                    listSem.acquire();
+                    boolean giaLoggato = !OpenConnection.stream().noneMatch((elem)->elem.getUsername().equals(name) && elem != this);
+                    listSem.release();
+                    
+                    return psw.equals(password) && !giaLoggato;
                 }
                 
                 i++;
             }            
-        }catch(IOException | ParserConfigurationException | SAXException ex){
+        }catch(IOException | ParserConfigurationException | SAXException | InterruptedException ex){
             System.err.println(ex.getMessage());            
         }
         return false;

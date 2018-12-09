@@ -41,6 +41,33 @@ public class ClientData {
     public void setIp(String ip) {
         this.ip = ip;
     }
-    
-    
+
+    /**
+     * ClientData Equals
+     * @param obj ClientData
+     * @return Boolean
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ClientData other = (ClientData) obj;
+        
+        if(!this.username.equals(other.username)){
+            return false;
+        }
+        
+        if(!this.ip.equals(other.ip)){
+            return false;
+        }
+
+        return true;
+    }    
 }

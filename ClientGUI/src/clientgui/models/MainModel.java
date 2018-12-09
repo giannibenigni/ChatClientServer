@@ -281,9 +281,8 @@ public class MainModel {
             boolean result = jsonLogInResult.getBoolean("result");
             
             if(!result){
-                Alert alert = new Alert(Alert.AlertType.ERROR, "USERNAME / PASSWORD ERRATI", ButtonType.OK);            
-                alert.setHeaderText("USERNAME / PASSWORD ERRATI");
-                alert.setContentText("USERNAME / PASSWORD ERRATI");
+                Alert alert = new Alert(Alert.AlertType.ERROR, "USERNAME / PASSWORD ERRATI O UTENTE GIA' LOGGATO", ButtonType.OK);            
+                alert.setHeaderText("ERRORE CONNESSIONE AL SERVER");                
                 alert.showAndWait();
                 return false;
             }
