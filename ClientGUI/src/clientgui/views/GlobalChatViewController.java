@@ -4,6 +4,7 @@ package clientgui.views;
 import clientgui.models.MainModel;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -40,6 +41,10 @@ public class GlobalChatViewController implements Initializable {
                 textField.setText(textField.getText()+" "+((Text)text).getText());
             });
         });
+        
+        textArea.textProperty().addListener((String) -> {            
+            Platform.runLater(() -> textArea.positionCaret(textArea.getLength()));            
+        });
     }
     
     public void setModel(MainModel model){
@@ -55,7 +60,7 @@ public class GlobalChatViewController implements Initializable {
     @FXML
     private void sendMessage(MouseEvent event) {
         if(!textField.getText().replace(" ", "").isEmpty())
-            model.sendMessageHandler.handle(event);
+            model.sendMessage();
     }
     
     @FXML

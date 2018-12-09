@@ -18,7 +18,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.json.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -34,6 +33,7 @@ public class Connection extends Thread{
     private Semaphore outSem = null;
     private Semaphore listSem = null;
     private Semaphore messagesSem = null;        
+    private Semaphore clientDataSem = null;
     
     private ObservableList<Connection> OpenConnection;    
     private StringProperty outputString;
@@ -60,8 +60,22 @@ public class Connection extends Thread{
         }
         
         outSem = new Semaphore(1);
+        clientDataSem = new Semaphore(1);
         
         this.start();
+    }
+    
+    public String getUsername(){
+        String temp = "";
+        try {
+            clientDataSem.acquire();
+            temp = clientData.getUsername();
+            clientDataSem.release();
+        } catch (InterruptedException ex) {
+            System.err.println(ex.getMessage());
+        }
+        
+        return temp;
     }
         
     public void writeMessage(String message) throws InterruptedException{        
@@ -171,22 +185,34 @@ public class Connection extends Thread{
             while(true){                
                 JSONObject json = new JSONObject(in.readLine());
 
-                if(json.getInt("messageType") == 2){
-                    disconnect(json);
-                    return;
-                }
+                switch(json.getInt("messageType")){
+                    case 2:
+                        disconnect(json);
+                        return;
+                    case 5: // private message
+                        json.getJSONObject("from").put("ip", clientData.getIp());
+                        listSem.acquire();
+                        for(Connection connect: OpenConnection){
+                            if(json.getJSONObject("to").getString("username").equals(connect.getUsername()) || json.getJSONObject("from").getString("username").equals(connect.getUsername())){
+                                connect.writeMessage(json.toString());                                
+                            }
+                        }
+                        listSem.release(); 
+                        break;
+                    default: // mormal message
+                        json.getJSONObject("from").put("ip", clientData.getIp());
 
-                json.getJSONObject("from").put("ip", clientData.getIp());
+                        listSem.acquire();
+                        for(Connection connect: OpenConnection){                    
+                            connect.writeMessage(json.toString());
+                        }
+                        listSem.release();     
 
-                listSem.acquire();
-                for(Connection connect: OpenConnection){                    
-                    connect.writeMessage(json.toString());
-                }
-                listSem.release();     
-
-                messagesSem.acquire();
-                outputString.set(outputString.get()+"\n<"+clientData.getUsername()+"["+clientData.getIp()+"]> "+json.getString("messageText")); 
-                messagesSem.release();                
+                        messagesSem.acquire();
+                        outputString.set(outputString.get()+"\n<"+clientData.getUsername()+"["+clientData.getIp()+"]> "+json.getString("messageText")); 
+                        messagesSem.release(); 
+                        break;
+                }                              
             }                        
         } catch (Exception ex) {
            System.err.println(ex);

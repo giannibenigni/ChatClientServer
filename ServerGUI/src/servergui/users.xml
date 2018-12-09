@@ -2,6 +2,10 @@
 
 <users>
     <user>
+        <username>admin</username>
+        <password>admin</password>
+    </user>
+    <user>
         <username>Eugenio</username>
         <password>1234</password>
     </user>

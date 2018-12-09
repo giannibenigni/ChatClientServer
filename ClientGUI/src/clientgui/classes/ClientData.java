@@ -11,12 +11,15 @@ import javafx.beans.property.StringProperty;
  */
 public class ClientData {
     private StringProperty username;
-    private StringProperty ip;
+    private StringProperty ip;    
     
     /**
      * Metodo Costruttore
      */
-    public ClientData(){}
+    public ClientData(){
+        this.username = new SimpleStringProperty("");
+        this.ip = new SimpleStringProperty("");
+    }
     
     /**
      * Metodo Costruttore

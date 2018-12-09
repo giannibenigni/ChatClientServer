@@ -5,6 +5,7 @@ import java.io.*;
 import java.net.*;
 import clientgui.Writer;
 import clientgui.classes.ClientData;
+import clientgui.classes.PrivateChat;
 import clientgui.classes.ServerData;
 import clientgui.parser.JSONParser;
 import java.util.concurrent.Semaphore;
@@ -31,12 +32,14 @@ public class MainModel {
     private Writer writerThread;
     
     private final BooleanProperty userLogged;
-    private final  StringProperty messages;
+    private final StringProperty messages;
     private final StringProperty messageToSend;
+    private final StringProperty privateMessageToSend;
     private final BooleanProperty showIp;    
+    private final StringProperty username;
     
-    private String username = "";
     private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+    private final ObjectProperty<ObservableList<PrivateChat>> chats = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     
     private BufferedReader in = null;
     private PrintStream out = null;
@@ -53,7 +56,33 @@ public class MainModel {
         userLogged = new SimpleBooleanProperty(false);
         messages = new SimpleStringProperty("");     
         messageToSend = new SimpleStringProperty("");
-        showIp = new SimpleBooleanProperty(true);        
+        showIp = new SimpleBooleanProperty(true); 
+        privateMessageToSend = new SimpleStringProperty(""); 
+        username = new SimpleStringProperty("");
+    }
+    
+    /**
+     * Username Getter
+     * @return String username
+     */
+    public String getUsername(){
+        return this.username.get();
+    }
+   
+    /**
+     * Username Setter
+     * @param value String value
+     */
+    public void setUsername(String value){
+        this.username.set(value);
+    }
+    
+    /**
+     * UserNameProperty Getter
+     * @return StringProperty
+     */
+    public StringProperty usernameProperty(){
+        return this.username;
     }
     
     /**
@@ -105,6 +134,22 @@ public class MainModel {
     }
     
     /**
+     * PrivateMessageToSend Getter
+     * @return String 
+     */
+    public String getPrivateMessageToSend(){
+        return this.privateMessageToSend.get();
+    }
+    
+    /**
+     * PrivateMessageToSend Setter
+     * @param value String 
+     */
+    public void setPrivateMessageToSend(String value){
+        this.privateMessageToSend.set(value);
+    }
+    
+    /**
      * ShowIp Getter
      * @return Boolean
      */
@@ -145,6 +190,14 @@ public class MainModel {
     }
     
     /**
+     * PrivateMessageToSend Property Getter
+     * @return StringProperty
+     */
+    public StringProperty privateMessageToSendProperty(){
+        return privateMessageToSend;
+    }
+    
+    /**
      * ShowIp Property Getter
      * @return BooleanProperty
      */
@@ -174,6 +227,30 @@ public class MainModel {
      */
     public ObjectProperty<ObservableList<ClientData>> clientsConnectedProperty(){
         return clientsConnected;
+    }
+    
+    /**
+     * Chats Getter
+     * @return ObservableList of PrivateChat
+     */
+    public ObservableList<PrivateChat> getChats(){
+        return this.chats.get();
+    }
+    
+    /**
+     * Chats Setter
+     * @param value ObservableList of PrivateChat
+     */
+    public void setChats(ObservableList<PrivateChat> value){
+        this.chats.set(value);
+    }
+    
+    /**
+     * Chats Property Getter
+     * @return ObjectProperty
+     */
+    public ObjectProperty<ObservableList<PrivateChat>> chatsProperty(){
+        return chats;
     }
 
     /**
@@ -214,9 +291,9 @@ public class MainModel {
             System.err.println(ex);
         }
         
-        this.username = username;
+        setUsername(username);
         
-        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem);         
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username);         
         writerThread.start();
         setUserLogged(true);
         
@@ -233,7 +310,7 @@ public class MainModel {
         if(!getUserLogged()) return;
                 
         try{
-            out.println(JSONParser.getLogOutJSON(username));
+            out.println(JSONParser.getLogOutJSON(getUsername()));
         }catch(JSONException jsonEx){
             System.err.println(jsonEx);
         }
@@ -242,7 +319,7 @@ public class MainModel {
         
         try{
             disconnectSem.acquire();
-            username = "";
+            setUsername(""); 
             clientsConnected.get().clear();
             out.flush();
             out.close();
@@ -266,26 +343,33 @@ public class MainModel {
     }
 
     /**
-     * SEND MESSAGE Handler
      * Manda un messaggio al server
      */
-    public EventHandler<MouseEvent> sendMessageHandler = e -> {
+    public void sendMessage(){
         if(!getUserLogged()) return;
         
         try{
-            out.println(JSONParser.getNormalMessageJSON(getMessageToSend(), username));
+            out.println(JSONParser.getNormalMessageJSON(getMessageToSend(), getUsername()));
         }catch(JSONException ex){
             System.err.println(ex);
         }
         
         setMessageToSend("");
-    };
+    }
     
     /**
-     * SendMessage Handler Getter
-     * @return EventHandler
+     * Manda un messaggio privato ad un client
+     * @param destinationClient ClientData dove mandare il messaggio
      */
-    public EventHandler<MouseEvent> getSendMessageHandler(){
-        return this.sendMessageHandler;
+    public void sendPrivateMessage(ClientData destinationClient){
+        if(!getUserLogged() && destinationClient.getUsername().equals("")) return;
+        
+        try{
+            out.println(JSONParser.getPrivateMessageJSON(getPrivateMessageToSend(), getUsername(), destinationClient));
+        }catch(JSONException ex){
+            System.err.println(ex);
+        }
+        
+        setPrivateMessageToSend("");
     }
 }

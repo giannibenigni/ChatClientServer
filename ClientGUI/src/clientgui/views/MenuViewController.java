@@ -65,6 +65,7 @@ public class MenuViewController implements Initializable {
                     fxmlLoader.<GlobalChatViewController>getController().setModel(model);
                     break;
                 case "PrivateMessageView":
+                    fxmlLoader.<PrivateMessageViewController>getController().setModel(model);
                     break;
                 case "ListOnlineView":
                     fxmlLoader.<ListOnlineViewController>getController().setModel(model);

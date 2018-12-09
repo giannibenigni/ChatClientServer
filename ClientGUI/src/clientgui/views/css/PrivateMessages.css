@@ -1,5 +1,5 @@
 
-.title{
+.title-label{
     -fx-font-size: 26px;
     -fx-font-family: System;
     -fx-font-weight: bold;
@@ -34,4 +34,17 @@
 
 .emoji-btn:hover{
     -fx-cursor: hand;
+}
+
+.newChat-btn{
+    -fx-background-color: #405361;
+    -fx-text-fill: white;
+    -fx-font-size: 22px;
+    -fx-font-family: System;
+    -fx-font-weight: bold;    
+}
+
+.newChat-btn:hover{
+    -fx-cursor:hand;
+    -fx-background-color: #4A6070;
 }

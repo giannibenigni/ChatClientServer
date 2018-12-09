@@ -3,11 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/MainViewController.java</file>
-            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/LoginViewController.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/classes/PrivateChat.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/Writer.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/MainView.fxml</file>
             <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/models/MainModel.java</file>
-            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/LoginView.fxml</file>
-            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/models/LoginModel.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/PrivateMessageViewController.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/PrivateMessageView.fxml</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/parser/JSONParser.java</file>
         </group>
     </open-files>
 </project-private>

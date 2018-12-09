@@ -2,6 +2,7 @@
 package clientgui;
 
 import clientgui.classes.ClientData;
+import clientgui.classes.PrivateChat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.concurrent.Semaphore;
@@ -19,27 +20,32 @@ import org.json.*;
 public class Writer extends Thread{
     private boolean attivo;
     private BufferedReader in;    
-    private StringProperty outputString;
+    private StringProperty globalChat;
     private ObjectProperty<ObservableList<ClientData>> listClient;
+    private final ObjectProperty<ObservableList<PrivateChat>> chats;
     private BooleanProperty showIp;
+    private String myUsername;
     
     private Semaphore disconnectSem;
     
     /**
      * Metodo Costruttore
      * @param buffer Input Stream del Server
-     * @param s Stringa di output
+     * @param globalMessages Stringa di output chat globale     
      * @param clients ObservableList of connected clients
      * @param showIp BooleanProperty showIp
      * @param sem Semaphore 
+     * @param chats Observable List of PrivateChat
      */
-    public Writer(BufferedReader buffer, StringProperty s, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem){
+    public Writer(BufferedReader buffer, StringProperty globalMessages, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem, ObjectProperty<ObservableList<PrivateChat>> chats, String myUser){
         this.in = buffer;
-        this.outputString = s;
+        this.globalChat = globalMessages;
         this.attivo = true;
         this.listClient = clients;
         this.showIp = showIp;
         this.disconnectSem = sem;
+        this.chats = chats;
+        this.myUsername = myUser;
     }
     
     /**
@@ -50,11 +56,41 @@ public class Writer extends Thread{
     }
     
     /**
-     * Metodo che aggiunge del testo all'outputString
+     * Metodo che aggiunge del testo alla stringa della chat globale
      * @param str String 
      */
-    public void scrivi(String str){
-        outputString.set(outputString.get()+"\n"+str);
+    public void writeGlobal(String str){
+        globalChat.set(globalChat.get()+"\n"+str);
+    }
+    
+    /**
+     * Metodo che aggiunge un messaggio ad una chat privata
+     * @param message String messaggio da aggiungere
+     * @param from PrivateChat dove aggiungere il messaggio
+     */
+    public void writePrivate(String message, PrivateChat from){
+        boolean trovato = false;
+        int i = 0; 
+        while(!trovato && i<chats.get().size()){
+            if(chats.get().get(i).getContact().equals(from.getContact())){
+                trovato = true;
+                chats.get().get(i).addMessages(message);
+            }
+            i++;
+        }
+        if(!trovato){
+            addChat(from);
+            chats.get().get(i).addMessages(message); 
+        }
+    }
+    
+    /**
+     * Metodo che aggiunge una chat alla lista delle chatprivate attive
+     * @param chat Private chat chat da aggiungere
+     */
+    public void addChat(PrivateChat chat){
+        if(chats.get().stream().noneMatch((elem) -> elem.getContact().equals(chat.getContact()))) 
+            this.chats.get().add(chat);
     }
     
     /**
@@ -72,7 +108,7 @@ public class Writer extends Thread{
                     case 0: // normalMessage      
                         clientData = jsonMessage.getJSONObject("from");                               
                         usernameToDisplay = showIp.get() ? clientData.getString("username")+"["+clientData.getString("ip")+"]" : clientData.getString("username");                        
-                        scrivi(usernameToDisplay+" -> "+jsonMessage.getString("messageText"));
+                        writeGlobal(usernameToDisplay+" -> "+jsonMessage.getString("messageText"));
                         break;
                     case 1: // logIn
                         clientData = jsonMessage.getJSONObject("newUserData"); 
@@ -84,7 +120,7 @@ public class Writer extends Thread{
                                 System.err.println(jsonEx.getMessage());
                             }
                         });
-                        scrivi("BENVENUTO "+usernameToDisplay);
+                        writeGlobal("BENVENUTO "+usernameToDisplay);
                         break;
                     case 2: // logOut
                         clientData = jsonMessage.getJSONObject("userData");
@@ -104,7 +140,7 @@ public class Writer extends Thread{
                             index++;
                         }
 
-                        scrivi("-- "+usernameToDisplay+" HA ABBANDONATO LA CHAT");
+                        writeGlobal("-- "+usernameToDisplay+" HA ABBANDONATO LA CHAT");
                         break;
                     case 3: // listClients                               
                         JSONArray clients = jsonMessage.getJSONArray("users");
@@ -118,6 +154,14 @@ public class Writer extends Thread{
                                 }
                             });
                         }
+                        break;
+                    case 5: // private message                         
+                        JSONObject whoWrite = jsonMessage.getJSONObject("from");
+                        usernameToDisplay = showIp.get() ? whoWrite.getString("username")+"["+whoWrite.getString("ip")+"]" : whoWrite.getString("username");
+                        if(whoWrite.getString("username").equals(myUsername)){
+                            whoWrite = jsonMessage.getJSONObject("to");
+                        }
+                        writePrivate(usernameToDisplay+" -> "+jsonMessage.getString("messageText"), new PrivateChat(new ClientData(whoWrite.getString("username"), whoWrite.getString("ip"))));
                         break;
                     default: break;
                 }                
