@@ -1,7 +1,6 @@
 
 package clientgui.classes;
 
-import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 

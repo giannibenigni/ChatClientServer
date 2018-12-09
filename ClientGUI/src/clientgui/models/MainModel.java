@@ -37,6 +37,7 @@ public class MainModel {
     private final StringProperty privateMessageToSend;
     private final BooleanProperty showIp;    
     private final StringProperty username;
+    private final BooleanProperty newPrivMessages;
     
     private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<ObservableList<PrivateChat>> chats = new SimpleObjectProperty<>(FXCollections.observableArrayList());
@@ -59,6 +60,7 @@ public class MainModel {
         showIp = new SimpleBooleanProperty(true); 
         privateMessageToSend = new SimpleStringProperty(""); 
         username = new SimpleStringProperty("");
+        newPrivMessages = new SimpleBooleanProperty(false);
     }
     
     /**
@@ -83,6 +85,30 @@ public class MainModel {
      */
     public StringProperty usernameProperty(){
         return this.username;
+    }
+    
+    /**
+     * NewPrivMessages Getter
+     * @return Boolean
+     */
+    public boolean getNewPrivMessages(){
+        return this.newPrivMessages.get();
+    }
+    
+    /**
+     * NewPrivMessages Setter
+     * @param value Boolean value
+     */
+    public void setNewPrivMessages(boolean value){
+        this.newPrivMessages.set(value);
+    }
+    
+    /**
+     * NewPrivMessages Property Getter
+     * @return Boolean Property
+     */
+    public BooleanProperty newPrivMessagesProperty(){
+        return this.newPrivMessages;
     }
     
     /**
@@ -292,7 +318,7 @@ public class MainModel {
         
         setUsername(username);
         
-        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username);         
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username, newPrivMessages);         
         writerThread.start();
         setUserLogged(true);
         
@@ -317,9 +343,7 @@ public class MainModel {
         writerThread.ferma();
         
         try{
-            disconnectSem.acquire();
-            setUsername(""); 
-            clientsConnected.get().clear();
+            disconnectSem.acquire();                       
             out.flush();
             out.close();
             in.close();
@@ -328,9 +352,12 @@ public class MainModel {
             System.err.println(ex);
         }
         
+        setUsername(""); 
         setMessages("");
         setUserLogged(false);
+        setNewPrivMessages(false);
         clientsConnected.get().clear();
+        chats.get().clear();
     };  
     
     /**

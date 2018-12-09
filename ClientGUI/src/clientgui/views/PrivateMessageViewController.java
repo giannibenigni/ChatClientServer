@@ -14,7 +14,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -59,17 +58,18 @@ public class PrivateMessageViewController implements Initializable {
             });
         });
         
-        textArea.textProperty().addListener((String) -> {            
-            Platform.runLater(() -> textArea.positionCaret(textArea.getLength()));            
-        });
+        textArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> textArea.positionCaret(textArea.getLength()));    
+            model.setNewPrivMessages(false); 
+        }); 
         
         listView.getSelectionModel().selectedItemProperty().addListener((String) -> {
             if(listView.getSelectionModel().getSelectedItem() != null){
                 currentClient = listView.getSelectionModel().getSelectedItem().getContact(); 
                 currentClientLabel.setText(listView.getSelectionModel().getSelectedItem().getContact().getUsername()); 
-                textArea.textProperty().bindBidirectional(listView.getSelectionModel().getSelectedItem().messagesProperty()); 
+                textArea.textProperty().bind(listView.getSelectionModel().getSelectedItem().messagesProperty());                 
             }
-        });
+        });                  
     }    
     
     public void setModel(MainModel model){

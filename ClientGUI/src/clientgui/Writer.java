@@ -19,14 +19,15 @@ import org.json.*;
  */
 public class Writer extends Thread{
     private boolean attivo;
-    private BufferedReader in;    
-    private StringProperty globalChat;
-    private ObjectProperty<ObservableList<ClientData>> listClient;
+    private final BufferedReader in;    
+    private final StringProperty globalChat;
+    private final ObjectProperty<ObservableList<ClientData>> listClient;
     private final ObjectProperty<ObservableList<PrivateChat>> chats;
-    private BooleanProperty showIp;
-    private String myUsername;
+    private final BooleanProperty showIp;
+    private final String myUsername;    
+    private final BooleanProperty newPrivMessage;
     
-    private Semaphore disconnectSem;
+    private final Semaphore disconnectSem;
     
     /**
      * Metodo Costruttore
@@ -36,8 +37,9 @@ public class Writer extends Thread{
      * @param showIp BooleanProperty showIp
      * @param sem Semaphore 
      * @param chats Observable List of PrivateChat
+     * @param myUser String myUsername
      */
-    public Writer(BufferedReader buffer, StringProperty globalMessages, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem, ObjectProperty<ObservableList<PrivateChat>> chats, String myUser){
+    public Writer(BufferedReader buffer, StringProperty globalMessages, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem, ObjectProperty<ObservableList<PrivateChat>> chats, String myUser, BooleanProperty newPrivMes){
         this.in = buffer;
         this.globalChat = globalMessages;
         this.attivo = true;
@@ -46,6 +48,7 @@ public class Writer extends Thread{
         this.disconnectSem = sem;
         this.chats = chats;
         this.myUsername = myUser;
+        this.newPrivMessage = newPrivMes;
     }
     
     /**
@@ -156,15 +159,24 @@ public class Writer extends Thread{
                         }
                         break;
                     case 5: // private message                         
-                        JSONObject whoWrite = jsonMessage.getJSONObject("from");
-                        usernameToDisplay = showIp.get() ? whoWrite.getString("username")+"["+whoWrite.getString("ip")+"]" : whoWrite.getString("username");
-                        if(whoWrite.getString("username").equals(myUsername)){
-                            whoWrite = jsonMessage.getJSONObject("to");
+                        final JSONObject whoWrite;
+                        if(jsonMessage.getJSONObject("from").getString("username").equals(myUsername)){
+                            whoWrite = jsonMessage.getJSONObject("to");                            
+                        }else{
+                            whoWrite = jsonMessage.getJSONObject("from");
+                            Platform.runLater(()->this.newPrivMessage.set(true)); 
                         }
-                        writePrivate(usernameToDisplay+" -> "+jsonMessage.getString("messageText"), new PrivateChat(new ClientData(whoWrite.getString("username"), whoWrite.getString("ip"))));
+                        usernameToDisplay = showIp.get() ? jsonMessage.getJSONObject("from").getString("username")+"["+jsonMessage.getJSONObject("from").getString("ip")+"]" : jsonMessage.getJSONObject("from").getString("username");
+                        Platform.runLater(()-> {
+                            try {
+                                writePrivate(usernameToDisplay+" -> "+jsonMessage.getString("messageText"), new PrivateChat(new ClientData(whoWrite.getString("username"), whoWrite.getString("ip"))));
+                            } catch (JSONException ex) {
+                                System.err.println(ex.getMessage());
+                            }
+                        });
                         break;
                     default: break;
-                }                
+                }
             } catch (IOException | JSONException ex) {                
                 System.err.println(ex.getMessage());
             }

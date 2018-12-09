@@ -11,7 +11,7 @@
 
 <?import clientgui.models.MainModel?>
 
-<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1250.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="clientgui.views.MainViewController">
+<BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1250.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.MainViewController">
     <fx:define>
         <MainModel fx:id="model" />
     </fx:define>
@@ -93,6 +93,19 @@
    <bottom>
       <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="1250.0" spacing="5.0" styleClass="bottom-bar" stylesheets="@css/Main.css" BorderPane.alignment="CENTER">
          <children>
+            <HBox fx:id="notification" alignment="CENTER_LEFT" spacing="10.0" visible="${model.newPrivMessages}">
+               <children>
+                  <ImageView pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@images/notification.png" />
+                     </image>
+                  </ImageView>
+                  <Label styleClass="bottom-label" stylesheets="@css/Main.css" text="Hai dei Nuovi Messaggi Privati" />
+               </children>
+               <HBox.margin>
+                  <Insets right="500.0" />
+               </HBox.margin>
+            </HBox>
             <Label styleClass="bottom-label" stylesheets="@css/Main.css" text="Show ip: " />
             <CheckBox fx:id="showIpCheck" />
             <Label styleClass="bottom-label" stylesheets="@css/Main.css" text="Connected: " />
@@ -101,7 +114,7 @@
                   <Image url="@images/connFalseIcon.png" />
                </image>
             </ImageView>
-            <Label text="${model.username}" styleClass="bottom-label" stylesheets="@css/Main.css">
+            <Label styleClass="bottom-label" stylesheets="@css/Main.css" text="${model.username}">
                <HBox.margin>
                   <Insets left="50.0" />
                </HBox.margin>

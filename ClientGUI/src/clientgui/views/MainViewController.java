@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -36,6 +37,9 @@ public class MainViewController implements Initializable {
     
     @FXML
     private CheckBox showIpCheck;
+    
+    @FXML
+    private HBox notification;
 
     /**
      * Initializes the controller class.
@@ -50,7 +54,7 @@ public class MainViewController implements Initializable {
         }catch(IOException ex){
             System.err.println(ex);
         }
-        borderPane.setCenter(ui);
+        borderPane.setCenter(ui);               
         
         // aggiungo un listener per modificare l'immagine dello stato (loggato/nonLoggato)
         model.userLoggedProperty().addListener((Boolean) -> {
@@ -58,7 +62,7 @@ public class MainViewController implements Initializable {
             imageConnStatus.setImage(new Image(image)); 
         });
         
-        showIpCheck.selectedProperty().bindBidirectional(model.showIpProperty());
+        showIpCheck.selectedProperty().bindBidirectional(model.showIpProperty());       
     }
 
     public BorderPane getBorderPane(){
@@ -82,7 +86,7 @@ public class MainViewController implements Initializable {
             }
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
-        }
+        }        
     }
 
     @FXML
