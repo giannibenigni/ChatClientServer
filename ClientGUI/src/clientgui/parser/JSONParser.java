@@ -68,4 +68,17 @@ public class JSONParser {
         
         return root;
     }
+    
+    public static JSONObject getSingUpJSON(String username, String password) throws JSONException{
+        JSONObject root = new JSONObject();
+        root.put("messageType", 7);
+        
+        JSONObject userData = new JSONObject();
+        userData.put("username", username);
+        userData.put("password", password);
+        
+        root.put("userData", userData);
+        
+        return root;
+    }
 }

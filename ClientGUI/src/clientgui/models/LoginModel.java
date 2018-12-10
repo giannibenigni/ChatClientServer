@@ -98,10 +98,20 @@ public class LoginModel {
     }
     
     /**
+     * mainModel getter
+     * @return MainModel
+     */
+    public MainModel getMainModel(){
+        return this.mainModel;
+    }
+    
+    /**
      * LOG IN Handler
      * faccio la connessione al socket e chiudo la finestra di login
      */
-    private EventHandler<MouseEvent> logInHandler = e -> {        
+    private EventHandler<MouseEvent> logInHandler = e -> { 
+        if(mainModel.getUserLogged()) mainModel.logOutHandler.handle(e);
+        
         // controllo se la connessione è andata a buon fine.
         if(mainModel.connectToSocket(serverData, username.get(), password.get())){ 
             // se si è connesso tolgo la finestra di login e metto la chat

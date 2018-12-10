@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<users>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
     <user>
         <username>admin</username>
         <password>admin</password>
@@ -13,4 +11,4 @@
         <username>test</username>
         <password>test</password>
     </user>
-</users>
+<user><username>testSin</username><password>12</password></user></users>

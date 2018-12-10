@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE users SYSTEM "roles.dtd">
 <users>
     <user>
         <username>admin</username>
@@ -12,5 +12,13 @@
     <user>
         <username>test</username>
         <password>test</password>
+    </user>
+    <user>
+        <username>testSin</username>
+        <password>12</password>
+    </user>
+    <user>
+        <username>aa</username>
+        <password>1</password>
     </user>
 </users>

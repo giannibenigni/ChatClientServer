@@ -302,9 +302,8 @@ public class MainModel {
         
         try {
             out.println(JSONParser.getLogInJSON(username, password).toString());
-            
-            JSONObject jsonLogInResult = new JSONObject(in.readLine());
-            boolean result = jsonLogInResult.getBoolean("result");
+                        
+            boolean result = new JSONObject(in.readLine()).getBoolean("result");
             
             if(!result){
                 Alert alert = new Alert(Alert.AlertType.ERROR, "USERNAME / PASSWORD ERRATI O UTENTE GIA' LOGGATO", ButtonType.OK);            
@@ -314,6 +313,49 @@ public class MainModel {
             }
         } catch (JSONException | IOException ex) {
             System.err.println(ex);
+        }
+        
+        setUsername(username);
+        
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username, newPrivMessages);         
+        writerThread.start();
+        setUserLogged(true);
+        
+        return true;
+    }
+    
+    /**
+     * Metodo per mandare una richiesta di registrazione al server
+     * @param serverData ServerData dati del server
+     * @param username String username
+     * @param password String password
+     * @return Boolean true se la registrazione è andata a buon fine
+     */
+    public boolean singUp(ServerData serverData, String username, String password){
+        try{        
+            socket = new Socket(InetAddress.getByName(serverData.getIp()),  serverData.getPort()); 
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintStream(socket.getOutputStream(), true);
+        }catch(IOException ex){
+            Alert alert = new Alert(Alert.AlertType.ERROR, ex.getMessage(), ButtonType.OK);            
+            alert.setHeaderText("ERRORE CONNESSIONE AL SERVER");
+            alert.setContentText(ex.getMessage());
+            alert.showAndWait();
+            return false;
+        }
+        
+        try{
+            out.println(JSONParser.getSingUpJSON(username, password).toString());
+            boolean result = new JSONObject(in.readLine()).getBoolean("result");
+            
+            if(!result){
+                Alert alert = new Alert(Alert.AlertType.ERROR, "UTENTE GIA' REGISTRATO CON QUESTO USERNAME", ButtonType.OK);            
+                alert.setHeaderText("ERRORE REGISTRAZIONE");                
+                alert.showAndWait();
+                return false;
+            }
+        }catch(JSONException | IOException ex){
+            System.err.println(ex.getMessage());
         }
         
         setUsername(username);

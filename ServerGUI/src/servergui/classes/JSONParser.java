@@ -49,4 +49,26 @@ public class JSONParser {
         
         return root;
     }
+    
+    public static JSONObject getSingUpResult(boolean result) throws JSONException{
+        JSONObject root = new JSONObject();
+        root.put("messageType", 8);
+        root.put("result", result);
+        
+        return root;
+    }    
+    
+    public static JSONObject SingUpLogInConverter(JSONObject singUpMessage) throws JSONException{
+        JSONObject root = new JSONObject();
+        root.put("messageType", 1);
+        
+        JSONObject newUserData = new JSONObject();
+        JSONObject temp = singUpMessage.getJSONObject("userData");
+        newUserData.put("username", temp.getString("username"));
+        newUserData.put("password", temp.getString("password"));
+        
+        root.put("newUserData", newUserData);
+        
+        return root;
+    }
 }

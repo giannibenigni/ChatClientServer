@@ -12,6 +12,28 @@
     -fx-background-color: #4A6070;
 }
 
+.singUp-btn{
+    -fx-font-size: 22px;
+    -fx-font-family: System;
+    -fx-font-weight: bold;    
+    -fx-text-fill: #405361;
+    -fx-border-color: #405361;
+    -fx-border-width: 3;
+    -fx-border-radius: 5;
+}
+
+.singUp-btn:hover{
+    -fx-cursor:hand;
+    -fx-background-color: rgb(190, 195, 200);
+}
+
+.singUp-label{
+    -fx-font-size: 16px;
+    -fx-font-family: System;
+    -fx-text-fill: #405361;
+    -fx-font-weight: bold;   
+}
+
 .general-textField{
     -fx-font-size: 20px;    
 }

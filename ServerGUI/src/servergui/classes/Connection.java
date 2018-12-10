@@ -15,7 +15,14 @@ import javafx.collections.ObservableList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.json.*;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -92,10 +99,10 @@ public class Connection extends Thread{
     private boolean logIn(JSONObject logInData){
         try{                        
             clientData.setUsername(logInData.getJSONObject("newUserData").getString("username"));
-            clientData.setPassword(logInData.getJSONObject("newUserData").getString("password")); 
+            clientData.setPassword(logInData.getJSONObject("newUserData").getString("password"));             
+            clientData.setIp(Client.getInetAddress().toString());  
             
-            clientData.setIp(Client.getInetAddress().toString());
-            logInData.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());              
+            logInData.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());
             
             return checkUser(clientData.getUsername(), clientData.getPassword());            
         }catch(JSONException ex){
@@ -131,8 +138,7 @@ public class Connection extends Thread{
                     listSem.release();
                     
                     return psw.equals(password) && !giaLoggato;
-                }
-                
+                }                
                 i++;
             }            
         }catch(IOException | ParserConfigurationException | SAXException | InterruptedException ex){
@@ -141,24 +147,94 @@ public class Connection extends Thread{
         return false;
     }
     
+    /**
+     * Metodo per fare la registrazione dki un nuovo utente
+     * @param singUpData JSONObject client data information
+     * @return Boolean true se la registrazione è andata a buon fine
+     */
+    public boolean singUp(JSONObject singUpData){
+        try{                        
+            clientData.setUsername(singUpData.getJSONObject("userData").getString("username"));
+            clientData.setPassword(singUpData.getJSONObject("userData").getString("password"));             
+            clientData.setIp(Client.getInetAddress().toString());  
+            
+            // controllo se esiste gia un account con queste credenziali, se non esiste lo creo
+            if(!checkUser(clientData.getUsername(), clientData.getPassword())){
+                DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+                Document doc = dBuilder.parse(new File("src/servergui/users.xml"));
+
+                doc.getDocumentElement().normalize();
+                Element users = doc.getDocumentElement();   
+                
+                Element newUser = doc.createElement("user");
+                Element username = doc.createElement("username");
+                username.appendChild(doc.createTextNode(clientData.getUsername()));                
+                Element password = doc.createElement("password");
+                password.appendChild(doc.createTextNode(clientData.getPassword()));
+                newUser.appendChild(username);
+                newUser.appendChild(password);
+                
+                users.appendChild(newUser);  
+                
+                // Use a Transformer for output
+                TransformerFactory tFactory = TransformerFactory.newInstance();
+                Transformer tr = tFactory.newTransformer();
+                tr.setOutputProperty(OutputKeys.INDENT, "yes");
+                tr.setOutputProperty(OutputKeys.METHOD, "xml");
+                tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+                tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
+                tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                
+                DOMSource source = new DOMSource(doc);
+                StreamResult result = new StreamResult(new File("src/servergui/users.xml")); 
+                tr.transform(source, result);
+                return true;
+            }
+        }catch(JSONException | IOException | SAXException | ParserConfigurationException | DOMException | TransformerException ex){
+            System.err.println(ex.getMessage());            
+        }
+        return false;
+    }
+    
     @Override
     public void run(){        
         try {       
-            JSONObject logIn = new JSONObject(in.readLine());
-            boolean logInResult = logIn(logIn);
+            JSONObject msg = new JSONObject(in.readLine());
             
-            // trasmetto al client il risultato del logIn
-            writeMessage(JSONParser.getLogInResult(logInResult).toString());           
-            
-            if(!logInResult){
-                listSem.acquire();
-                Platform.runLater(() -> { 
-                    OpenConnection.remove(this); 
-                });
-                listSem.release();
-                return;
-            }
-            
+            // controllo se è una richiesta di registrazione
+            if(msg.getInt("messageType") == 7){
+                boolean singUpResult = singUp(msg);
+                
+                msg = JSONParser.SingUpLogInConverter(msg);
+                msg.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());
+                
+                // trasmetto al client il risultato della Registrazione
+                writeMessage(JSONParser.getSingUpResult(singUpResult).toString()); 
+                
+                if(!singUpResult){
+                    listSem.acquire();
+                    Platform.runLater(() -> { 
+                        OpenConnection.remove(this);
+                    });
+                    listSem.release();
+                    return;
+                }                                
+            }else{
+                boolean logInResult = logIn(msg);            
+                // trasmetto al client il risultato del logIn
+                writeMessage(JSONParser.getLogInResult(logInResult).toString()); 
+                
+                if(!logInResult){
+                    listSem.acquire();
+                    Platform.runLater(() -> { 
+                        OpenConnection.remove(this); 
+                    });
+                    listSem.release();
+                    return;
+                }
+            }                        
+
             // mi creo un array con i dati di tutti i client connessi eccetto me stesso
             ArrayList<ClientData> clientsData = new ArrayList<>();            
             listSem.acquire();                
@@ -168,14 +244,14 @@ public class Connection extends Thread{
             }
             listSem.release();
             
-            //Invio ai client la lista dei client connessi
+            //Invio al client la lista dei client connessi
             writeMessage(JSONParser.getClientListJSON(clientsData).toString());
             
             //Trasmetto il login a tutti i client eccetto questo
             listSem.acquire();
             for(Connection connect : OpenConnection){
                 if(connect != this){
-                    connect.writeMessage(logIn.toString());
+                    connect.writeMessage(msg.toString());
                 }
             }
             listSem.release();
@@ -190,7 +266,7 @@ public class Connection extends Thread{
                 JSONObject json = new JSONObject(in.readLine());
 
                 switch(json.getInt("messageType")){
-                    case 2:
+                    case 2: // log out
                         disconnect(json);
                         return;
                     case 5: // private message
@@ -202,8 +278,8 @@ public class Connection extends Thread{
                             }
                         }
                         listSem.release(); 
-                        break;
-                    default: // mormal message
+                        break;                    
+                    default: // normal message
                         json.getJSONObject("from").put("ip", clientData.getIp());
 
                         listSem.acquire();
