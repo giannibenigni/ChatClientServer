@@ -41,8 +41,8 @@
             </JFXButton>
             <VBox alignment="CENTER" spacing="10.0">
                <children>
-                  <Label styleClass="singUp-label" stylesheets="@css/Login.css" text="Don't Have an Account?" />
-                  <JFXButton onMouseClicked="#singUpClicked" prefHeight="60.0" prefWidth="200.0" styleClass="singUp-btn" stylesheets="@css/Login.css" text="SING UP" />
+                  <Label styleClass="signUp-label" stylesheets="@css/Login.css" text="Don't Have an Account?" />
+                  <JFXButton onMouseClicked="#signUpClicked" prefHeight="60.0" prefWidth="200.0" styleClass="signUp-btn" stylesheets="@css/Login.css" text="SIGN UP" />
                </children>
                <VBox.margin>
                   <Insets top="10.0" />

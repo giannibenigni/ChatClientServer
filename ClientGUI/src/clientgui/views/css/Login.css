@@ -12,7 +12,7 @@
     -fx-background-color: #4A6070;
 }
 
-.singUp-btn{
+.signUp-btn{
     -fx-font-size: 22px;
     -fx-font-family: System;
     -fx-font-weight: bold;    
@@ -22,12 +22,12 @@
     -fx-border-radius: 5;
 }
 
-.singUp-btn:hover{
+.signUp-btn:hover{
     -fx-cursor:hand;
     -fx-background-color: rgb(190, 195, 200);
 }
 
-.singUp-label{
+.signUp-label{
     -fx-font-size: 16px;
     -fx-font-family: System;
     -fx-text-fill: #405361;

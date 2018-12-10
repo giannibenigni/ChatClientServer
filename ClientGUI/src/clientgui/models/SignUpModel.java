@@ -20,7 +20,7 @@ import javafx.scene.layout.BorderPane;
  *
  * @author Eugenio
  */
-public class SingUpModel {
+public class SignUpModel {
     private ServerData serverData;
     private StringProperty username;
     private StringProperty password;
@@ -31,7 +31,7 @@ public class SingUpModel {
     /**
      * Metodo Costruttore
      */
-    public SingUpModel(){
+    public SignUpModel(){
         this.serverData = new ServerData("127.0.0.1", 4000);
         this.username = new SimpleStringProperty(""); 
         this.password = new SimpleStringProperty("");
@@ -136,9 +136,9 @@ public class SingUpModel {
     }
     
     /**
-     * Sing Up Handler
+     * Sign Up Handler
      */
-    private EventHandler<MouseEvent> singUpHandler = e -> {  
+    private EventHandler<MouseEvent> signUpHandler = e -> {  
         
         if(!getPassword().equals(getConfirmPassword())){
             Alert alert = new Alert(Alert.AlertType.ERROR, "LE PASSWORD NON CORRISPONDONO", ButtonType.OK);            
@@ -151,7 +151,7 @@ public class SingUpModel {
         if(mainModel.getUserLogged()) mainModel.logOutHandler.handle(e);
         
         // controllo se la registrazione è andata a buon fine.
-        if(mainModel.singUp(serverData, getUsername(), getPassword())){ 
+        if(mainModel.signUp(serverData, getUsername(), getPassword())){ 
             // se si è connesso tolgo la finestra di login e metto la chat
             BorderPane borderPaneMain = (BorderPane) ((Node) e.getSource()).getScene().getRoot();
             Parent ui = null;
@@ -170,10 +170,10 @@ public class SingUpModel {
     };
 
     /**
-     * SingUp Handler Getter
+     * SignUp Handler Getter
      * @return EventHandler
      */
-    public EventHandler<MouseEvent> getSingUpHandler(){
-        return this.singUpHandler;
+    public EventHandler<MouseEvent> getSignUpHandler(){
+        return this.signUpHandler;
     }
 }

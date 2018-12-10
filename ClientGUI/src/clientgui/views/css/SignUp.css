@@ -8,7 +8,7 @@
     -fx-font-size: 12px;    
 }
 
-.singUp-btn{
+.signUp-btn{
     -fx-background-color: #405361;
     -fx-text-fill: white;
     -fx-font-size: 22px;
@@ -16,7 +16,7 @@
     -fx-font-weight: bold;
 }
 
-.singUp-btn:hover{
+.signUp-btn:hover{
     -fx-cursor:hand;
     -fx-background-color: #4A6070;
 }

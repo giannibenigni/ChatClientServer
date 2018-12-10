@@ -3,7 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/MainViewController.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/css/Login.css</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/MenuViewController.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/models/MainModel.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/PrivateMessageViewController.java</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/views/LoginView.fxml</file>
+            <file>file:/D:/Eugenio/Informatica/GitHubRepository/ChatClientServer/ClientGUI/src/clientgui/parser/JSONParser.java</file>
         </group>
     </open-files>
 </project-private>

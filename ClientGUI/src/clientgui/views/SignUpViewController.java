@@ -3,7 +3,7 @@ package clientgui.views;
 
 import clientgui.classes.util.StringNumberConverter;
 import clientgui.models.MainModel;
-import clientgui.models.SingUpModel;
+import clientgui.models.SignUpModel;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXPasswordField;
 import com.jfoenix.controls.JFXTextField;
@@ -21,10 +21,10 @@ import javafx.fxml.Initializable;
  *
  * @author Eugenio
  */
-public class SingUpViewController implements Initializable {
+public class SignUpViewController implements Initializable {
 
     @FXML
-    private SingUpModel model;
+    private SignUpModel model;
     
     @FXML
     private JFXTextField txtIp;
@@ -42,7 +42,7 @@ public class SingUpViewController implements Initializable {
     private JFXPasswordField txtConfirmPassword;
     
     @FXML
-    private JFXButton btnSingUp;
+    private JFXButton btnSignUp;
 
     /**
      * Initializes the controller class.
@@ -65,37 +65,37 @@ public class SingUpViewController implements Initializable {
         
         txtIp.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if(!newValue){
-                btnSingUp.setDisable(!txtIp.validate());
+                btnSignUp.setDisable(!txtIp.validate());
             }
         }); 
         
         txtPort.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if(!newValue){
-                btnSingUp.setDisable(!txtPort.validate());
+                btnSignUp.setDisable(!txtPort.validate());
             }
         }); 
         
         txtUsername.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if(!newValue){
-                btnSingUp.setDisable(!txtUsername.validate()); 
+                btnSignUp.setDisable(!txtUsername.validate()); 
             }
         }); 
         
         txtPassword.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if(!newValue){
-                btnSingUp.setDisable(!txtPassword.validate()); 
+                btnSignUp.setDisable(!txtPassword.validate()); 
             }
         }); 
         
         txtConfirmPassword.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if(!newValue){
-                btnSingUp.setDisable(!txtConfirmPassword.validate());                 
+                btnSignUp.setDisable(!txtConfirmPassword.validate());                 
             }
         }); 
         
-        btnSingUp.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {            
+        btnSignUp.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {            
             // abilito o disabilito il bottone di login in base alle validation            
-            btnSingUp.setDisable(!txtIp.validate() || !txtPort.validate() || !txtUsername.validate() || !txtPassword.validate() || !txtConfirmPassword.validate());            
+            btnSignUp.setDisable(!txtIp.validate() || !txtPort.validate() || !txtUsername.validate() || !txtPassword.validate() || !txtConfirmPassword.validate());            
         });
     }
 

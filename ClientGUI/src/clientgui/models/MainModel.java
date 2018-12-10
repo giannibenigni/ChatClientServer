@@ -331,7 +331,7 @@ public class MainModel {
      * @param password String password
      * @return Boolean true se la registrazione è andata a buon fine
      */
-    public boolean singUp(ServerData serverData, String username, String password){
+    public boolean signUp(ServerData serverData, String username, String password){
         try{        
             socket = new Socket(InetAddress.getByName(serverData.getIp()),  serverData.getPort()); 
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -345,7 +345,7 @@ public class MainModel {
         }
         
         try{
-            out.println(JSONParser.getSingUpJSON(username, password).toString());
+            out.println(JSONParser.getSignUpJSON(username, password).toString());
             boolean result = new JSONObject(in.readLine()).getBoolean("result");
             
             if(!result){

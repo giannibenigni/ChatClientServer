@@ -148,13 +148,13 @@ public class Connection extends Thread{
     
     /**
      * Metodo per fare la registrazione dki un nuovo utente
-     * @param singUpData JSONObject client data information
+     * @param signUpData JSONObject client data information
      * @return Boolean true se la registrazione è andata a buon fine
      */
-    public boolean singUp(JSONObject singUpData){
+    public boolean signUp(JSONObject signUpData){
         try{                        
-            clientData.setUsername(singUpData.getJSONObject("userData").getString("username"));
-            clientData.setPassword(singUpData.getJSONObject("userData").getString("password"));             
+            clientData.setUsername(signUpData.getJSONObject("userData").getString("username"));
+            clientData.setPassword(signUpData.getJSONObject("userData").getString("password"));             
             clientData.setIp(Client.getInetAddress().toString());  
             
             // controllo se esiste gia un account con queste credenziali, se non esiste lo creo
@@ -201,15 +201,15 @@ public class Connection extends Thread{
             
             // controllo se è una richiesta di registrazione
             if(msg.getInt("messageType") == 7){
-                boolean singUpResult = singUp(msg);
+                boolean signUpResult = signUp(msg);
                 
-                msg = JSONParser.SingUpLogInConverter(msg);
+                msg = JSONParser.SignUpLogInConverter(msg);
                 msg.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());
                 
                 // trasmetto al client il risultato della Registrazione
-                writeMessage(JSONParser.getSingUpResult(singUpResult).toString()); 
+                writeMessage(JSONParser.getSignUpResult(signUpResult).toString()); 
                 
-                if(!singUpResult){
+                if(!signUpResult){
                     listSem.acquire();
                     Platform.runLater(() -> { 
                         OpenConnection.remove(this);

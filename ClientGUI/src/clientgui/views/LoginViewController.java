@@ -113,13 +113,13 @@ public class LoginViewController implements Initializable {
     }
 
     @FXML
-    private void singUpClicked(MouseEvent event) {
+    private void signUpClicked(MouseEvent event) {
         BorderPane borderPaneMain = (BorderPane) ((Node) event.getSource()).getScene().getRoot();
         Parent ui = null;
         try{
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SingUpView.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("SignUpView.fxml"));
             ui = fxmlLoader.load();            
-            fxmlLoader.<SingUpViewController>getController().setMainModel(model.getMainModel()); 
+            fxmlLoader.<SignUpViewController>getController().setMainModel(model.getMainModel()); 
         }catch(IOException ex){
             System.err.println(ex.getCause());
         }

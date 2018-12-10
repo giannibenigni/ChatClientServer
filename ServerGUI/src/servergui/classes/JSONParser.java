@@ -50,7 +50,7 @@ public class JSONParser {
         return root;
     }
     
-    public static JSONObject getSingUpResult(boolean result) throws JSONException{
+    public static JSONObject getSignUpResult(boolean result) throws JSONException{
         JSONObject root = new JSONObject();
         root.put("messageType", 8);
         root.put("result", result);
@@ -58,12 +58,12 @@ public class JSONParser {
         return root;
     }    
     
-    public static JSONObject SingUpLogInConverter(JSONObject singUpMessage) throws JSONException{
+    public static JSONObject SignUpLogInConverter(JSONObject signUpMessage) throws JSONException{
         JSONObject root = new JSONObject();
         root.put("messageType", 1);
         
         JSONObject newUserData = new JSONObject();
-        JSONObject temp = singUpMessage.getJSONObject("userData");
+        JSONObject temp = signUpMessage.getJSONObject("userData");
         newUserData.put("username", temp.getString("username"));
         newUserData.put("password", temp.getString("password"));
         

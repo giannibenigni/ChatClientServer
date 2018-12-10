@@ -11,7 +11,7 @@
 
 <?import clientgui.models.LoginModel ?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" spacing="30.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="clientgui.views.LoginViewController">
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" spacing="30.0" xmlns:fx="http://javafx.com/fxml/1" fx:controller="clientgui.views.LoginViewController">
     <fx:define>
         <LoginModel fx:id="model" />
     </fx:define>
@@ -41,8 +41,8 @@
             </JFXButton>
             <VBox alignment="CENTER" spacing="10.0">
                <children>
-                  <Label styleClass="singUp-label" stylesheets="@css/Login.css" text="Don't Have an Account?" />
-                  <JFXButton onMouseClicked="#singUpClicked" prefHeight="60.0" prefWidth="200.0" styleClass="singUp-btn" stylesheets="@css/Login.css" text="SING UP" />
+                  <Label styleClass="signUp-label" stylesheets="@css/Login.css" text="Don't Have an Account?" />
+                  <JFXButton onMouseClicked="#signUpClicked" prefHeight="60.0" prefWidth="200.0" styleClass="signUp-btn" stylesheets="@css/Login.css" text="SIGN UP" />
                </children>
                <VBox.margin>
                   <Insets top="10.0" />
