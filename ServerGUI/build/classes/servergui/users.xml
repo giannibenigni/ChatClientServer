@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><users>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<users>
     <user>
         <username>admin</username>
         <password>admin</password>
@@ -11,4 +13,12 @@
         <username>test</username>
         <password>test</password>
     </user>
-<user><username>testSin</username><password>12</password></user></users>
+    <user>
+        <username>testSin</username>
+        <password>12</password>
+    </user>
+    <user>
+        <username>aa</username>
+        <password>1</password>
+    </user>
+</users>

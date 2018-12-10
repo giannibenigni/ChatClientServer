@@ -118,11 +118,10 @@ public class Connection extends Thread{
      * @return Boolean dati corretti
      */
     private boolean checkUser(String username, String password){  
-        try{
+        try{            
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(new File("src/servergui/users.xml"));
-            
+            Document doc = dBuilder.parse(new File("src/servergui/users.xml"));            
             doc.getDocumentElement().normalize();
             NodeList users = doc.getElementsByTagName("user");
             
@@ -142,7 +141,7 @@ public class Connection extends Thread{
                 i++;
             }            
         }catch(IOException | ParserConfigurationException | SAXException | InterruptedException ex){
-            System.err.println(ex.getMessage());            
+            System.err.println(ex);            
         }
         return false;
     }
@@ -182,9 +181,7 @@ public class Connection extends Thread{
                 Transformer tr = tFactory.newTransformer();
                 tr.setOutputProperty(OutputKeys.INDENT, "yes");
                 tr.setOutputProperty(OutputKeys.METHOD, "xml");
-                tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-                tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "roles.dtd");
-                tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+                tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");                                
                 
                 DOMSource source = new DOMSource(doc);
                 StreamResult result = new StreamResult(new File("src/servergui/users.xml")); 

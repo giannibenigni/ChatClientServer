@@ -7,11 +7,13 @@ package clientgui.views;
 
 import clientgui.classes.ClientData;
 import clientgui.models.MainModel;
+import com.jfoenix.controls.JFXButton;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 /**
  * FXML Controller class
@@ -22,14 +24,27 @@ public class ListOnlineViewController implements Initializable {
 
     private MainModel model;
     
+    private ClientData selectedClient = new ClientData();
+    
     @FXML
     private ListView<ClientData> listClients;
+    
+    @FXML
+    private JFXButton btnKick;
 
     /**
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {        
+    public void initialize(URL url, ResourceBundle rb) { 
+        btnKick.setVisible(false); 
+        listClients.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue != null){
+                selectedClient = newValue;
+                btnKick.setVisible(true);
+                btnKick.setText("Kick User: "+selectedClient.getUsername()); 
+            }
+        });
     }    
     
     public void setModel(MainModel model){
@@ -39,5 +54,10 @@ public class ListOnlineViewController implements Initializable {
     
     private void setBindings(){
         listClients.itemsProperty().bindBidirectional(model.clientsConnectedProperty()); 
+    }
+
+    @FXML
+    private void kick_click(MouseEvent event) {
+        // Gianni qui
     }
 }
