@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <users>
     <user>
         <username>admin</username>
@@ -11,8 +10,16 @@
     </user>
     <user>
         <username>test</username>
-        <password>test</password>
-    </user>
+        <password>test</password>    
+    <kicks>
+    <kick>
+    <username>admin</username>
+    </kick>
+    <kick>
+    <username>Eugenio</username>
+    </kick>
+</kicks>
+</user>
     <user>
         <username>testSin</username>
         <password>12</password>
@@ -20,5 +27,9 @@
     <user>
         <username>aa</username>
         <password>1</password>
+    </user>
+    <user>
+        <username>newClient</username>
+        <password>12345678</password>
     </user>
 </users>

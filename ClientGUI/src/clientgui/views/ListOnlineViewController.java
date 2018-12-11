@@ -43,6 +43,9 @@ public class ListOnlineViewController implements Initializable {
                 selectedClient = newValue;
                 btnKick.setVisible(true);
                 btnKick.setText("Kick User: "+selectedClient.getUsername()); 
+            }else{
+                selectedClient = newValue;
+                btnKick.setVisible(false);                
             }
         });
     }    
@@ -57,7 +60,7 @@ public class ListOnlineViewController implements Initializable {
     }
 
     @FXML
-    private void kick_click(MouseEvent event) {
-        // Gianni qui
+    private void kick_click(MouseEvent event) {        
+        model.kick(selectedClient);
     }
 }

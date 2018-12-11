@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
@@ -30,12 +32,15 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author gianni.benigni
+ * @author Eugenio
  */
 public class Connection extends Thread{        
     private Socket Client = null;
     private BufferedReader in = null;
     private PrintStream out = null;
+    
+    private boolean vai = true;
+    private Semaphore semStop = new Semaphore(0);
     
     private Semaphore outSem = null;
     private Semaphore listSem = null;
@@ -91,12 +96,16 @@ public class Connection extends Thread{
         outSem.release();
     }    
      
+    private void ferma(){
+        this.vai = false;        
+    }
+    
     /**
      * metodo che fa il login del Client
      * @param logInData JSONObject log in data
-     * @return Boolean true se il logIn va a bun fine
+     * @return JSONObject messaggio da inviare al client che indica se è riuscito a fare il login o no
      */
-    private boolean logIn(JSONObject logInData){
+    private JSONObject logIn(JSONObject logInData){
         try{                        
             clientData.setUsername(logInData.getJSONObject("newUserData").getString("username"));
             clientData.setPassword(logInData.getJSONObject("newUserData").getString("password"));             
@@ -104,21 +113,73 @@ public class Connection extends Thread{
             
             logInData.getJSONObject("newUserData").put("ip",Client.getInetAddress().toString());
             
-            return checkUser(clientData.getUsername(), clientData.getPassword());            
-        }catch(JSONException ex){
+            
+            if(!checkUsernamePassword(clientData.getUsername(), clientData.getPassword())){
+                return JSONParser.getLogInResult(false, 1);
+            }
+            
+            listSem.acquire();
+            boolean giaLoggato = !OpenConnection.stream().noneMatch((elem)->elem.getUsername().equals(getUsername()) && elem != this);
+            listSem.release();
+            if(giaLoggato){
+                return JSONParser.getLogInResult(false, 2);
+            }
+            
+            if(isBannto(clientData.getUsername())){
+                return JSONParser.getLogInResult(false, 3);
+            }
+            
+            return JSONParser.getLogInResult(true, -1);
+        }catch(JSONException | InterruptedException ex){
             System.err.println(ex.getMessage());            
         }
-        return false;
+        
+        try {
+            return JSONParser.getLogInResult(false, 0);
+        } catch (JSONException ex) { }
+        return null;
     }        
     
     /**
-     * Metodo che controlla i dati del client 
+     * Metodo per controllare se un client è bannato
+     * @param username String client da controllare
+     * @return Boolean true se bannato
+     */
+    private boolean isBannto(String username){
+        try{
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File("src/servergui/users.xml"));            
+            doc.getDocumentElement().normalize();
+            NodeList users = doc.getElementsByTagName("user");
+            
+            int i = 0;
+            while(i<users.getLength()){
+                Element user = (Element)users.item(i);
+                String name = user.getElementsByTagName("username").item(0).getTextContent();                
+                
+                if(name.equals(username)){
+                    if(user.getElementsByTagName("bannato").getLength() >= 1){
+                        return true;
+                    }
+                    break;
+                }                
+                i++;
+            }            
+        }catch(IOException | ParserConfigurationException | SAXException ex){
+            System.err.println(ex);            
+        }
+        return false;
+    }
+    
+    /**
+     * Metodo che controlla se lo username e la password sono corretti
      * @param username String username
      * @param password String password
      * @return Boolean dati corretti
      */
-    private boolean checkUser(String username, String password){  
-        try{            
+    private boolean checkUsernamePassword(String username, String password){  
+        try{
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(new File("src/servergui/users.xml"));            
@@ -132,15 +193,11 @@ public class Connection extends Thread{
                 String psw = user.getElementsByTagName("password").item(0).getTextContent();
                 
                 if(name.equals(username)){
-                    listSem.acquire();
-                    boolean giaLoggato = !OpenConnection.stream().noneMatch((elem)->elem.getUsername().equals(name) && elem != this);
-                    listSem.release();
-                    
-                    return psw.equals(password) && !giaLoggato;
+                    return psw.equals(password);
                 }                
                 i++;
             }            
-        }catch(IOException | ParserConfigurationException | SAXException | InterruptedException ex){
+        }catch(IOException | ParserConfigurationException | SAXException ex){
             System.err.println(ex);            
         }
         return false;
@@ -158,7 +215,7 @@ public class Connection extends Thread{
             clientData.setIp(Client.getInetAddress().toString());  
             
             // controllo se esiste gia un account con queste credenziali, se non esiste lo creo
-            if(!checkUser(clientData.getUsername(), clientData.getPassword())){
+            if(!checkUsernamePassword(clientData.getUsername(), clientData.getPassword())){
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
                 Document doc = dBuilder.parse(new File("src/servergui/users.xml"));
@@ -194,6 +251,114 @@ public class Connection extends Thread{
         return false;
     }
     
+    /**
+     * Metodo per Kickare un client
+     * @param clientToKick ClientData client da kikkare
+     * @return Boolean true se il kick è andato a buon fine
+     */
+    private boolean kick(ClientData clientToKick){
+        try{
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File("src/servergui/users.xml"));            
+            doc.getDocumentElement().normalize();
+            NodeList users = doc.getElementsByTagName("user");
+            
+            int i = 0;
+            while(i<users.getLength()){
+                Element user = (Element)users.item(i);
+                String name = user.getElementsByTagName("username").item(0).getTextContent();                
+                
+                if(name.equals(clientToKick.getUsername())){                    
+                    NodeList kicks = user.getElementsByTagName("kick");
+                    int j = 0;
+                    while(j < kicks.getLength()){
+                        Element kick = (Element)kicks.item(j);
+                        // controllo se non ho gia kikkato questo utente
+                        if(kick.getElementsByTagName("username").item(0).getTextContent().equals(getUsername())){
+                            return false;
+                        }
+                        j++;
+                    }
+                    
+                    // se non gia kikkato aggiungo un kick
+                    Element newKick = doc.createElement("kick");
+                    Element username = doc.createElement("username");
+                    username.appendChild(doc.createTextNode(getUsername()));   
+                    newKick.appendChild(username);
+                    
+                    NodeList kicksTags = user.getElementsByTagName("kicks");
+                    if(kicksTags.getLength() <= 0){
+                        Element kicksTag = doc.createElement("kicks");
+                        kicksTag.appendChild(newKick); 
+                        user.appendChild(kicksTag);                        
+                    }else{                        
+                        kicksTags.item(0).appendChild(newKick);
+                    }
+                    // Use a Transformer for output
+                    TransformerFactory tFactory = TransformerFactory.newInstance();
+                    Transformer tr = tFactory.newTransformer();
+                    tr.setOutputProperty(OutputKeys.INDENT, "yes");
+                    tr.setOutputProperty(OutputKeys.METHOD, "xml");
+                    tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");                                
+
+                    DOMSource source = new DOMSource(doc);
+                    StreamResult result = new StreamResult(new File("src/servergui/users.xml")); 
+                    tr.transform(source, result);
+                    return true;
+                }                
+                i++;
+            }            
+        }catch(IOException | ParserConfigurationException | SAXException | DOMException | TransformerException ex){
+            System.err.println(ex);            
+        }
+        return false;
+    }
+    
+    /**
+     * Metodo per controllare se un user deve essere bannato
+     * @param clientToCheck Clientdata da controllare
+     * @return Boolean true se è da bannare
+     */
+    private boolean checkBan(ClientData clientToCheck){
+        try{
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(new File("src/servergui/users.xml"));            
+            doc.getDocumentElement().normalize();
+            NodeList users = doc.getElementsByTagName("user");
+            
+            int i = 0;
+            while(i<users.getLength()){
+                Element user = (Element)users.item(i);
+                String name = user.getElementsByTagName("username").item(0).getTextContent();                
+                       
+                if(name.equals(clientToCheck.getUsername())){                 
+                    if(user.getElementsByTagName("kick").getLength() >= 3){
+                        user.appendChild(doc.createElement("bannato"));
+                        // Use a Transformer for output
+                        TransformerFactory tFactory = TransformerFactory.newInstance();
+                        Transformer tr = tFactory.newTransformer();
+                        tr.setOutputProperty(OutputKeys.INDENT, "yes");
+                        tr.setOutputProperty(OutputKeys.METHOD, "xml");
+                        tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");                                
+
+                        DOMSource source = new DOMSource(doc);
+                        StreamResult result = new StreamResult(new File("src/servergui/users.xml")); 
+                        tr.transform(source, result);
+                        return true;
+                    }
+                    break;
+                }
+                
+                i++;
+            }            
+        }catch(Exception ex){
+            System.err.println(ex);            
+        }
+        return false;
+    }
+    
     @Override
     public void run(){        
         try {       
@@ -218,11 +383,11 @@ public class Connection extends Thread{
                     return;
                 }                                
             }else{
-                boolean logInResult = logIn(msg);            
+                JSONObject logInResult = logIn(msg);            
                 // trasmetto al client il risultato del logIn
-                writeMessage(JSONParser.getLogInResult(logInResult).toString()); 
+                writeMessage(logInResult.toString()); 
                 
-                if(!logInResult){
+                if(logInResult.getBoolean("result") == false){
                     listSem.acquire();
                     Platform.runLater(() -> { 
                         OpenConnection.remove(this); 
@@ -259,7 +424,7 @@ public class Connection extends Thread{
             
             messagesSem.release();
             
-            while(true){                
+            while(vai){                
                 JSONObject json = new JSONObject(in.readLine());
 
                 switch(json.getInt("messageType")){
@@ -275,7 +440,56 @@ public class Connection extends Thread{
                             }
                         }
                         listSem.release(); 
-                        break;                    
+                        break;          
+                    case 10: //kick
+                        json.getJSONObject("senderUser").put("ip", clientData.getIp());
+                        
+                        String username = json.getJSONObject("userToKick").getString("username");
+                        String ip = json.getJSONObject("userToKick").getString("ip");
+                        ClientData clientToKick = new ClientData(username, ip);
+                        
+                        if(kick(clientToKick)){
+                            listSem.acquire();
+                            for(Connection conn: OpenConnection){
+                                conn.writeMessage(JSONParser.getServerNormalMessageJSON(getUsername()+" ha kikkato: "+username).toString());
+                            }
+                            listSem.release();
+                                                        
+                            messagesSem.acquire();
+                            outputString.set(outputString.get()+"\n"+getUsername()+" ha kikkato: "+username); 
+                            messagesSem.release();
+                        }else{
+                            writeMessage(JSONParser.getKickResponse(false).toString());
+                        }                                              
+                        
+                        if(checkBan(clientToKick)){
+                            int indexToBan = 0;
+                            listSem.acquire();
+                            for(Connection conn: OpenConnection){
+                                conn.writeMessage(JSONParser.getBanMessageJSON(clientToKick).toString());
+                                if(conn.getUsername().equals(username)){
+                                    indexToBan = OpenConnection.indexOf(conn);
+                                }
+                            }
+                            final Connection clientToBan = OpenConnection.get(indexToBan);
+                            clientToBan.writeMessage(JSONParser.getBanMessageJSON(clientToKick).toString());
+                            Platform.runLater(() -> { 
+                                OpenConnection.remove(clientToBan); 
+                            });                            
+                            listSem.release();  
+                            
+                            messagesSem.acquire();
+                            outputString.set(outputString.get()+"\n"+username+" è stato BANNATO"); 
+                            messagesSem.release();
+                            
+                            clientToBan.ferma();
+                            clientToBan.semStop.acquire();
+                            clientToBan.out.flush();
+                            clientToBan.out.close(); 
+                            clientToBan.in.close();
+                            clientToBan.Client.close();  
+                        }                        
+                        break;
                     default: // normal message
                         json.getJSONObject("from").put("ip", clientData.getIp());
 
@@ -294,6 +508,7 @@ public class Connection extends Thread{
         } catch (Exception ex) {
            System.err.println(ex);
         }        
+        semStop.release();
     }
     
     /**

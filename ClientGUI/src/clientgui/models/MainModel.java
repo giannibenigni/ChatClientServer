@@ -9,6 +9,7 @@ import clientgui.classes.PrivateChat;
 import clientgui.classes.ServerData;
 import clientgui.parser.JSONParser;
 import java.util.concurrent.Semaphore;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -37,7 +38,7 @@ public class MainModel {
     private final StringProperty privateMessageToSend;
     private final BooleanProperty showIp;    
     private final StringProperty username;
-    private final BooleanProperty newPrivMessages;
+    private final BooleanProperty newPrivMessages;    
     
     private final ObjectProperty<ObservableList<ClientData>> clientsConnected = new SimpleObjectProperty<>(FXCollections.observableArrayList());
     private final ObjectProperty<ObservableList<PrivateChat>> chats = new SimpleObjectProperty<>(FXCollections.observableArrayList());
@@ -52,7 +53,7 @@ public class MainModel {
     /**
      * Metodo Costruttore
      */
-    public MainModel(){
+    public MainModel(){        
         disconnectSem = new Semaphore(0);
         userLogged = new SimpleBooleanProperty(false);
         messages = new SimpleStringProperty("");     
@@ -60,7 +61,7 @@ public class MainModel {
         showIp = new SimpleBooleanProperty(true); 
         privateMessageToSend = new SimpleStringProperty(""); 
         username = new SimpleStringProperty("");
-        newPrivMessages = new SimpleBooleanProperty(false);
+        newPrivMessages = new SimpleBooleanProperty(false);       
     }
     
     /**
@@ -303,11 +304,12 @@ public class MainModel {
         try {
             out.println(JSONParser.getLogInJSON(username, password).toString());
                         
-            boolean result = new JSONObject(in.readLine()).getBoolean("result");
+            JSONObject jsonResult = new JSONObject(in.readLine());
             
-            if(!result){
-                Alert alert = new Alert(Alert.AlertType.ERROR, "USERNAME / PASSWORD ERRATI O UTENTE GIA' LOGGATO", ButtonType.OK);            
-                alert.setHeaderText("ERRORE CONNESSIONE AL SERVER");                
+            
+            if(!jsonResult.getBoolean("result")){
+                Alert alert = new Alert(Alert.AlertType.ERROR, jsonResult.getString("errorMessage"), ButtonType.OK);            
+                alert.setHeaderText("ERRORE LOG-IN");                
                 alert.showAndWait();
                 return false;
             }
@@ -317,7 +319,7 @@ public class MainModel {
         
         setUsername(username);
         
-        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username, newPrivMessages);         
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username, newPrivMessages, socket, out);         
         writerThread.start();
         setUserLogged(true);
         
@@ -360,11 +362,23 @@ public class MainModel {
         
         setUsername(username);
         
-        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username, newPrivMessages);         
+        this.writerThread = new Writer(in, messages, clientsConnected, showIp, disconnectSem, chats, username, newPrivMessages, socket, out);         
         writerThread.start();
         setUserLogged(true);
         
         return true;
+    }
+    
+    /**
+     * Metodo per kickare un client
+     * @param userToKick ClientData to kick
+     */
+    public void kick(ClientData userToKick){
+        try{
+            out.println(JSONParser.getKickJSON(getUsername(), userToKick.getUsername(), userToKick.getIp()).toString());
+        }catch(JSONException ex){
+            System.err.println(ex);
+        }
     }
     
     // EVENTS -------------------------------------------------    
@@ -385,11 +399,11 @@ public class MainModel {
         writerThread.ferma();
         
         try{
-            disconnectSem.acquire();                       
+            disconnectSem.acquire();
             out.flush();
             out.close();
             in.close();
-            socket.close();            
+            socket.close();
         }catch(IOException | InterruptedException ex){            
             System.err.println(ex);
         }
@@ -439,5 +453,23 @@ public class MainModel {
         }
         
         setPrivateMessageToSend("");
+    }
+    
+    /**
+     * Metodo per chiusere il programma 
+     */
+    private void ban(){
+        try{            
+            writerThread.ferma();
+            disconnectSem.acquire();
+            out.flush();
+            out.close();
+            in.close();
+            socket.close();
+        }catch(IOException | InterruptedException ex){            
+            System.err.println(ex);
+        }
+        
+        Platform.exit();
     }
 }

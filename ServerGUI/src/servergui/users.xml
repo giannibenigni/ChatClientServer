@@ -10,8 +10,20 @@
     </user>
     <user>
         <username>test</username>
-        <password>test</password>
-    </user>
+        <password>test</password>    
+    <kicks>
+    <kick>
+    <username>admin</username>
+    </kick>
+    <kick>
+    <username>Eugenio</username>
+    </kick>
+<kick>
+<username>aa</username>
+</kick>
+</kicks>
+<bannato/>
+</user>
     <user>
         <username>testSin</username>
         <password>12</password>
@@ -20,8 +32,8 @@
         <username>aa</username>
         <password>1</password>
     </user>
-<user>
-<username>newClient</username>
-<password>12345678</password>
-</user>
+    <user>
+        <username>newClient</username>
+        <password>12345678</password>
+    </user>
 </users>

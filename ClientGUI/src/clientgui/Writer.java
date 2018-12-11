@@ -5,12 +5,16 @@ import clientgui.classes.ClientData;
 import clientgui.classes.PrivateChat;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.net.Socket;
 import java.util.concurrent.Semaphore;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.json.*;
 
 /**
@@ -25,7 +29,11 @@ public class Writer extends Thread{
     private final ObjectProperty<ObservableList<PrivateChat>> chats;
     private final BooleanProperty showIp;
     private final String myUsername;    
-    private final BooleanProperty newPrivMessage;
+    private final BooleanProperty newPrivMessage;    
+    private BooleanProperty bannato;
+
+    private PrintStream out = null;
+    private Socket socket = null;
     
     private final Semaphore disconnectSem;
     
@@ -38,8 +46,9 @@ public class Writer extends Thread{
      * @param sem Semaphore 
      * @param chats Observable List of PrivateChat
      * @param myUser String myUsername
+     * @param newPrivMes     
      */
-    public Writer(BufferedReader buffer, StringProperty globalMessages, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem, ObjectProperty<ObservableList<PrivateChat>> chats, String myUser, BooleanProperty newPrivMes){
+    public Writer(BufferedReader buffer, StringProperty globalMessages, ObjectProperty<ObservableList<ClientData>> clients, BooleanProperty showIp, Semaphore sem, ObjectProperty<ObservableList<PrivateChat>> chats, String myUser, BooleanProperty newPrivMes, Socket s, PrintStream p){
         this.in = buffer;
         this.globalChat = globalMessages;
         this.attivo = true;
@@ -48,7 +57,9 @@ public class Writer extends Thread{
         this.disconnectSem = sem;
         this.chats = chats;
         this.myUsername = myUser;
-        this.newPrivMessage = newPrivMes;
+        this.newPrivMessage = newPrivMes;        
+        this.socket = s;
+        this.out = p;
     }
     
     /**
@@ -101,7 +112,7 @@ public class Writer extends Thread{
      */
     @Override
     public void run() {        
-        while(attivo){  //TODO ottimizzare 
+        while(attivo){
             try { 
                 JSONObject jsonMessage = new JSONObject(in.readLine());
                 final JSONObject clientData;
@@ -175,6 +186,38 @@ public class Writer extends Thread{
                             }
                         });
                         break;
+                    case 6:
+                        Platform.runLater(()->{
+                            Alert a = new Alert(Alert.AlertType.ERROR, "HAI GIA KIKKATO QUESTO UTENTE", ButtonType.OK);
+                            a.show();
+                        });
+                        break;
+                    case 9:                                 
+                        clientData = jsonMessage.getJSONObject("clientToBan");
+                        ClientData clToBan = new ClientData(clientData.getString("username"), clientData.getString("ip"));
+                        
+                        if(clToBan.getUsername().equals(myUsername)){
+                            out.flush();
+                            out.close();
+                            in.close();
+                            socket.close();
+                            Platform.exit();
+                            return;
+                        }
+                        
+                        int ind = 0;
+                        boolean tro = false;
+                        while(ind<listClient.get().size() && !tro) {
+                            if (listClient.get().get(ind).equals(clToBan)){   
+                                //Per rimuovere l'elemento devo fare cosi perchè se no da errore                                 
+                                final int indexRemove = ind;
+                                Platform.runLater(() -> {listClient.get().remove(indexRemove);});
+                                tro = true;
+                            }
+                            ind++;
+                        }
+                        writeGlobal("-- "+clToBan.getUsername()+" E' STATO BANNATO");
+                        break; 
                     default: break;
                 }
             } catch (IOException | JSONException ex) {                

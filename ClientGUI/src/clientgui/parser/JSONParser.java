@@ -81,4 +81,22 @@ public class JSONParser {
         
         return root;
     }
+    
+    public static JSONObject getKickJSON(String myUsername, String usernameKick, String ipKick) throws JSONException{
+        JSONObject root = new JSONObject();
+        root.put("messageType", 10);
+        
+        JSONObject senderUser = new JSONObject();
+        senderUser.put("username", myUsername);
+        // il mio ip verra settato dal server
+        
+        JSONObject userToKick = new JSONObject();
+        userToKick.put("username", usernameKick);
+        userToKick.put("ip", ipKick);
+        
+        root.put("senderUser", senderUser);
+        root.put("userToKick", userToKick);
+        
+        return root;
+    }
 }
